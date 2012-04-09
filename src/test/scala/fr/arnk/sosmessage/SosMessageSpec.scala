@@ -2,6 +2,7 @@ package fr.arnk.sosmessage
 
 import org.specs._
 import unfiltered._
+import dispatch._
 
 class SosMessageSpec extends Specification with unfiltered.spec.netty.Served {
 
@@ -26,5 +27,14 @@ class SosMessageSpec extends Specification with unfiltered.spec.netty.Served {
         SosMessageApiV1.commentsForMessage orElse SosMessageApiV1.postComment orElse
         SosMessageApiV1.publishedAnnouncements
     })
+  }
+
+  override def http[T](handler: Handler[T]): T = {
+    val h = new Http
+    try {
+      (h.when { code => (200 to 500) contains code })(handler)
+    } finally {
+      h.shutdown()
+    }
   }
 }

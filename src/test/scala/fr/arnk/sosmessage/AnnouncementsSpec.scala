@@ -34,6 +34,19 @@ object AnnouncementsSpec extends SosMessageSpec {
       firstItem \ "text" must_== JString("Text of fourth announcement")
       firstItem \ "url" must_== JString("http://fourth/announcement")
     }
+
+    "retrieve no announcement for non existing app" in {
+      val resp = http(host / "api" / "v2" / "announcements" <<? Map("appname" -> "nonExistingApp") as_str)
+      val json = parse(resp)
+
+      json \ "meta" \ "code" must_== JInt(200)
+
+      val response = json \ "response"
+      response \ "count" must_== JInt(0)
+
+      val JArray(items) = response \ "items"
+      items.size must_== 0
+    }
   }
 
 }

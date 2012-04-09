@@ -59,7 +59,18 @@ object CategoriesSpec extends SosMessageSpec {
       val secondItem = items(1)
       secondItem \ "name" must_== JString("fourthCategory")
       secondItem \ "color" must_== JString("#00f")
+    }
 
+    "retrieve no category for non existing app" in {
+      val resp = http(host / "api" / "v2" / "categories" <<? Map("appname" -> "nonExistingApp") as_str)
+      val json = parse(resp)
+
+      json \ "meta" \ "code" must_== JInt(200)
+      val response = json \ "response"
+      response \ "count" must_== JInt(0)
+
+      val JArray(items) = response \ "items"
+      items.size must_== 0
     }
   }
 

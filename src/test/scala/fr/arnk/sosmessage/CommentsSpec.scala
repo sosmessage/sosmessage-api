@@ -52,6 +52,54 @@ object CommentsSpec extends SosMessageSpec {
           secondItem \ "uid" must_== JString("iphone1")
       }
     }
+
+    // test error handling
+    "return an error when creating comment for non existing message" in {
+      DB.collection(CategoriesCollectionName) {
+        c =>
+          val aCategory = c.findOne(MongoDBObject("name" -> "firstCategory")).get
+          val resp = http(host / "api" / "v2" / "messages" / aCategory.get("_id").toString / "comments"
+            << Map("text" -> "Bender's comment", "author" -> "Bender", "uid" -> "android1") as_str)
+          val json = parse(resp)
+
+          json \ "meta" \ "code" must_== JInt(400)
+          json \ "meta" \ "errorType" must_== JString("UnknownMessage")
+          json \ "meta" \ "errorDetails" must_== JString("The message does not exist.")
+          json \ "response" must_== JObject(List())
+      }
+
+      val resp = http(host / "api" / "v2" / "messages" / "nonExistingId" / "comments"
+        << Map("text" -> "Bender's comment", "author" -> "Bender", "uid" -> "android1") as_str)
+      val json = parse(resp)
+
+      json \ "meta" \ "code" must_== JInt(500)
+      json \ "meta" \ "errorType" must_== JString("ServerError")
+      json \ "response" must_== JObject(List())
+    }
+
+    "return an error when creating comment without required parameters" in {
+      DB.collection(MessagesCollectionName) {
+        c =>
+          val aMessage = c.findOne(MongoDBObject("text" -> "First message in first category")).get
+          var resp = http(host / "api" / "v2" / "messages" / aMessage.get("_id").toString / "comments"
+            << Map("author" -> "Bender", "uid" -> "android1") as_str)
+          var json = parse(resp)
+
+          json \ "meta" \ "code" must_== JInt(400)
+          json \ "meta" \ "errorType" must_== JString("MissingParameter")
+          json \ "meta" \ "errorDetails" must_== JString("The 'text' parameter is required.")
+          json \ "response" must_== JObject(List())
+
+          resp = http(host / "api" / "v2" / "messages" / aMessage.get("_id").toString / "comments"
+            << Map("text" -> "Bender's comment", "author" -> "Bender") as_str)
+          json = parse(resp)
+
+          json \ "meta" \ "code" must_== JInt(400)
+          json \ "meta" \ "errorType" must_== JString("MissingParameter")
+          json \ "meta" \ "errorDetails" must_== JString("The 'uid' parameter is required.")
+          json \ "response" must_== JObject(List())
+      }
+    }
   }
 
 }

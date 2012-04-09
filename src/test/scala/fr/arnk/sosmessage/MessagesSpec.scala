@@ -262,4 +262,159 @@ object MessagesSpec extends SosMessageSpec {
     }
   }
 
+  // error handling
+  "return an error when retrieving message for non existing category" in {
+    DB.collection(MessagesCollectionName) {
+      c =>
+        val message = c.findOne(MongoDBObject("text" -> "First message in fourth category")).get
+
+        var resp = http(host / "api" / "v2" / "categories" / message.get("_id").toString / "message" as_str)
+        var json = parse(resp)
+
+        json \ "meta" \ "code" must_== JInt(400)
+        json \ "meta" \ "errorType" must_== JString("UnknownCategory")
+        json \ "meta" \ "errorDetails" must_== JString("The category does not exist.")
+        json \ "response" must_== JObject(List())
+
+        resp = http(host / "api" / "v2" / "categories" / message.get("_id").toString / "messages" as_str)
+        json = parse(resp)
+
+        json \ "meta" \ "code" must_== JInt(400)
+        json \ "meta" \ "errorType" must_== JString("UnknownCategory")
+        json \ "meta" \ "errorDetails" must_== JString("The category does not exist.")
+        json \ "response" must_== JObject(List())
+    }
+
+    var resp = http(host / "api" / "v2" / "categories" / "nonExistingId" / "message" as_str)
+    var json = parse(resp)
+
+    json \ "meta" \ "code" must_== JInt(500)
+    json \ "meta" \ "errorType" must_== JString("ServerError")
+    json \ "response" must_== JObject(List())
+
+    resp = http(host / "api" / "v2" / "categories" / "nonExistingId" / "messages" as_str)
+    json = parse(resp)
+
+    json \ "meta" \ "code" must_== JInt(500)
+    json \ "meta" \ "errorType" must_== JString("ServerError")
+    json \ "response" must_== JObject(List())
+  }
+
+  "return an error when creating message in a non existing category" in {
+    val message = DB.collection(MessagesCollectionName) {
+      c =>
+        c.findOne(MongoDBObject("text" -> "First message in fourth category")).get
+    }
+    val resp = http(host / "api" / "v2" / "categories" / message.get("_id").toString / "message"
+      << Map("text" -> "test message") as_str)
+    val json = parse(resp)
+
+    json \ "meta" \ "code" must_== JInt(400)
+    json \ "meta" \ "errorType" must_== JString("UnknownCategory")
+    json \ "meta" \ "errorDetails" must_== JString("The category does not exist.")
+    json \ "response" must_== JObject(List())
+  }
+
+  "return an error when creating message without required parameters" in {
+    val firstCategory = DB.collection(CategoriesCollectionName) {
+      c =>
+        c.findOne(MongoDBObject("name" -> "firstCategory")).get
+    }
+    val resp = http(host / "api" / "v2" / "categories" / firstCategory.get("_id").toString / "message"
+      << Map() as_str)
+    val json = parse(resp)
+
+    json \ "meta" \ "code" must_== JInt(400)
+    json \ "meta" \ "errorType" must_== JString("MissingParameter")
+    json \ "meta" \ "errorDetails" must_== JString("The 'text' parameter is required.")
+    json \ "response" must_== JObject(List())
+  }
+
+  "return an error when rating a non existing message" in {
+    val firstCategory = DB.collection(CategoriesCollectionName) {
+      c =>
+        c.findOne(MongoDBObject("name" -> "firstCategory")).get
+    }
+    val resp = http(host / "api" / "v2" / "messages" / firstCategory.get("_id").toString / "rate" << Map("uid" -> "iphone1", "rating" -> "3") as_str)
+    val json = parse(resp)
+
+    println(resp)
+
+    json \ "meta" \ "code" must_== JInt(400)
+    json \ "meta" \ "errorType" must_== JString("UnknownMessage")
+    json \ "meta" \ "errorDetails" must_== JString("The message does not exist.")
+    json \ "response" must_== JObject(List())
+  }
+
+  "return an error when voting a non existing message" in {
+    val firstCategory = DB.collection(CategoriesCollectionName) {
+      c =>
+        c.findOne(MongoDBObject("name" -> "firstCategory")).get
+    }
+    val resp = http(host / "api" / "v2" / "messages" / firstCategory.get("_id").toString / "vote" << Map("uid" -> "iphone1", "rating" -> "3") as_str)
+    val json = parse(resp)
+
+    json \ "meta" \ "code" must_== JInt(400)
+    json \ "meta" \ "errorType" must_== JString("UnknownMessage")
+    json \ "meta" \ "errorDetails" must_== JString("The message does not exist.")
+    json \ "response" must_== JObject(List())
+  }
+
+  "return an error when rating message without required parameters" in {
+    val message = DB.collection(MessagesCollectionName) {
+      c =>
+        c.findOne(MongoDBObject("text" -> "First message in fourth category")).get
+    }
+    var resp = http(host / "api" / "v2" / "messages" / message.get("_id").toString / "rate"
+      << Map("rating" -> "3") as_str)
+    var json = parse(resp)
+
+    json \ "meta" \ "code" must_== JInt(400)
+    json \ "meta" \ "errorType" must_== JString("MissingParameter")
+    json \ "meta" \ "errorDetails" must_== JString("The 'uid' parameter is required.")
+    json \ "response" must_== JObject(List())
+
+    resp = http(host / "api" / "v2" / "messages" / message.get("_id").toString / "rate"
+      << Map("uid" -> "iphone1") as_str)
+    json = parse(resp)
+
+    json \ "meta" \ "code" must_== JInt(400)
+    json \ "meta" \ "errorType" must_== JString("MissingParameter")
+    json \ "meta" \ "errorDetails" must_== JString("The 'rating' parameter is required.")
+    json \ "response" must_== JObject(List())
+  }
+
+  "return an error when voting message without required parameters" in {
+    val message = DB.collection(MessagesCollectionName) {
+      c =>
+        c.findOne(MongoDBObject("text" -> "First message in fourth category")).get
+    }
+    var resp = http(host / "api" / "v2" / "messages" / message.get("_id").toString / "vote"
+      << Map("vote" -> "1") as_str)
+    var json = parse(resp)
+
+    json \ "meta" \ "code" must_== JInt(400)
+    json \ "meta" \ "errorType" must_== JString("MissingParameter")
+    json \ "meta" \ "errorDetails" must_== JString("The 'uid' parameter is required.")
+    json \ "response" must_== JObject(List())
+
+    resp = http(host / "api" / "v2" / "messages" / message.get("_id").toString / "vote"
+      << Map("uid" -> "iphone1") as_str)
+    json = parse(resp)
+
+    json \ "meta" \ "code" must_== JInt(400)
+    json \ "meta" \ "errorType" must_== JString("MissingParameter")
+    json \ "meta" \ "errorDetails" must_== JString("The 'vote' parameter is required.")
+    json \ "response" must_== JObject(List())
+
+    resp = http(host / "api" / "v2" / "messages" / message.get("_id").toString / "vote"
+      << Map("uid" -> "iphone1", "vote" -> "3") as_str)
+    json = parse(resp)
+
+    json \ "meta" \ "code" must_== JInt(400)
+    json \ "meta" \ "errorType" must_== JString("WrongParameter")
+    json \ "meta" \ "errorDetails" must_== JString("The 'vote' parameter must be -1 or 1.")
+    json \ "response" must_== JObject(List())
+  }
+
 }

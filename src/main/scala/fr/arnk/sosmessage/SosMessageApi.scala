@@ -152,7 +152,10 @@ object SosMessageApi {
     case req @ POST(Path(Seg("api" :: "v2" :: "messages" :: messageId :: "rate" :: Nil))) =>
       withErrorHandling {
         val Params(form) = req
-        if (!form.contains("uid")) {
+        if (!SosMessage.messageExists(messageId)) {
+          BadRequest ~> buildBadRequestResponse("UnknownMessage",
+            "The message does not exist.")
+        } else if (!form.contains("uid")) {
           BadRequest ~> buildBadRequestResponse("MissingParameter",
             "The 'uid' parameter is required.")
         } else if (!form.contains("rating")) {
@@ -173,7 +176,10 @@ object SosMessageApi {
     case req @ POST(Path(Seg("api" :: "v2" :: "messages" :: messageId :: "vote" :: Nil))) =>
       withErrorHandling {
         val Params(form) = req
-        if (!form.contains("uid")) {
+        if (!SosMessage.messageExists(messageId)) {
+          BadRequest ~> buildBadRequestResponse("UnknownMessage",
+            "The message does not exist.")
+        } else if (!form.contains("uid")) {
           BadRequest ~> buildBadRequestResponse("MissingParameter",
             "The 'uid' parameter is required.")
         } else if (!form.contains("vote")) {
