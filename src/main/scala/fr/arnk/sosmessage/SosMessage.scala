@@ -136,7 +136,7 @@ object SosMessage {
           finalizeFunction = Some(finalizeJS), query = Some(q), jsScope = jsScope)
     }
 
-    val order = MongoDBObject("value.rating" -> 1)
+    val order = MongoDBObject("value.rating" -> -1)
     DB.collection(resultCollectionName) {
       c =>
         c.find().sort(order).limit(limit.getOrElse(10)).toSeq.map(message =>
@@ -158,7 +158,7 @@ object SosMessage {
           finalizeFunction = Some(finalizeJS), query = Some(q), jsScope = jsScope)
     }
 
-    val order = MongoDBObject("value.rating" -> -1)
+    val order = MongoDBObject("value.rating" -> 1)
     DB.collection(resultCollectionName) {
       c =>
         c.find().sort(order).limit(limit.getOrElse(10)).toSeq.map(message =>
