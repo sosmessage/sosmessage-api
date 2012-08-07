@@ -4,7 +4,7 @@ import unfiltered.Cycle
 import net.liftweb.json._
 import net.liftweb.json.JsonDSL._
 import unfiltered.request._
-import unfiltered.response.{ NoContent, BadRequest, Json, Ok, InternalServerError, ResponseFunction }
+import unfiltered.response._
 import StandardConverters._
 import unfiltered._
 
@@ -270,12 +270,12 @@ object SosMessageApi {
 
   private[this] def withErrorHandling(f: => ResponseFunction[Any]): ResponseFunction[Any] = {
     try {
-      f
+      f ~> ResponseHeader("Access-Control-Allow-Origin", "*" :: Nil)
     } catch {
       case e: Exception => {
         val json = ("meta", ("code", 500) ~ ("errorType", "ServerError") ~
           ("errorDetails", e.getMessage)) ~ ("response", JObject(List()))
-        InternalServerError ~> Json(json)
+        InternalServerError ~> Json(json) ~> ResponseHeader("Access-Control-Allow-Origin", "*" :: Nil)
       }
     }
   }
