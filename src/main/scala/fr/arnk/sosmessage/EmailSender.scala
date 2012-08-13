@@ -4,7 +4,6 @@ import akka.actor._
 import com.mongodb.DBObject
 import javax.mail.internet.{ InternetAddress, MimeMessage }
 import javax.mail.{ Message => JMessage, Session }
-import org.streum.configrity.Configuration
 
 case class SendEmail(message: DBObject)
 
@@ -17,7 +16,7 @@ object EmailSender {
     emailSender
   }
 
-  def stop = {
+  def stop() {
     system.stop(emailSender)
   }
 
@@ -59,15 +58,15 @@ class EmailSender extends Actor {
 
     val props = System.getProperties
     if (auth == "true") {
-      props.put("mail.smtp.auth", "true");
-      props.put("mail.smtp.user", user);
-      props.put("mail.smtp.password", password);
+      props.put("mail.smtp.auth", "true")
+      props.put("mail.smtp.user", user)
+      props.put("mail.smtp.password", password)
     } else {
-      props.put("mail.smtp.auth", "false");
+      props.put("mail.smtp.auth", "false")
     }
-    props.put("mail.smtp.starttls.enable", tls);
-    props.put("mail.smtp.host", host);
-    props.put("mail.smtp.port", port.toString);
+    props.put("mail.smtp.starttls.enable", tls)
+    props.put("mail.smtp.host", host)
+    props.put("mail.smtp.port", port.toString)
     val session = Session.getDefaultInstance(props)
     val mimeMessage = new MimeMessage(session)
 
@@ -77,9 +76,9 @@ class EmailSender extends Actor {
     val text = Text.format(message.get("category").toString, message.get("text").toString, message.get("contributorName").toString)
     mimeMessage.setText(text)
 
-    val transport = session.getTransport("smtp");
-    transport.connect(host, port, user, password);
-    transport.sendMessage(mimeMessage, mimeMessage.getAllRecipients());
-    transport.close();
+    val transport = session.getTransport("smtp")
+    transport.connect(host, port, user, password)
+    transport.sendMessage(mimeMessage, mimeMessage.getAllRecipients)
+    transport.close()
   }
 }
