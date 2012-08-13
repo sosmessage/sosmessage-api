@@ -1,9 +1,8 @@
-resolvers += "retronym-releases" at "http://retronym.github.com/repo/releases"
+resolvers += Resolver.url(
+  "sbt-plugin-releases",
+  new URL("http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-releases/")
+)(Resolver.ivyStylePatterns)
 
-resolvers += "retronym-snapshots" at "http://retronym.github.com/repo/snapshots"
+addSbtPlugin("com.github.retronym" % "sbt-onejar" % "0.8")
 
-addSbtPlugin("com.github.retronym" % "sbt-onejar" % "0.7")
-
-resolvers += Classpaths.typesafeResolver
-
-addSbtPlugin("com.typesafe.sbtscalariform" % "sbtscalariform" % "0.3.0")
+addSbtPlugin("com.typesafe.sbtscalariform" % "sbtscalariform" % "0.5.1")

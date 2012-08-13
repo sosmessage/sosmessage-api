@@ -6,7 +6,7 @@ version := "2.0-SNAPSHOT"
 
 seq(com.github.retronym.SbtOneJar.oneJarSettings: _*)
 
-resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
+resolvers += Classpaths.typesafeResolver
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" % "akka-actor" % "2.0",
@@ -22,6 +22,6 @@ libraryDependencies ++= Seq(
 
 scalacOptions ++= Seq("-unchecked", "-deprecation")
 
-seq(scalariformSettings: _*)
+scalariformSettings
 
 parallelExecution in Test := false
