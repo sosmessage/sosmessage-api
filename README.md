@@ -1,4 +1,4 @@
-# sosmessagedecarte - API
+# sosmessage - API
 
 ## Overview
 
@@ -31,7 +31,7 @@ See the [install instructions](https://github.com/harrah/xsbt/wiki/Getting-Start
 
 	$ cd backend/sosmessage-api
 	$ sbt run
-	
+
 The SosMessage API will be accessible at `http://localhost:3000/api/v1/...`.
 
 * `http://localhost:3000/api/v1/categories`: all categories;
