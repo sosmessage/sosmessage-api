@@ -7,8 +7,11 @@ import unfiltered.request._
 import unfiltered.response._
 import StandardConverters._
 import unfiltered._
+import java.util.Date
 
 object SosMessageApi {
+
+  val ApiVersion = 2
 
   // Categories
   def publishedCategories: Cycle.Intent[Any, Any] = {
@@ -20,7 +23,8 @@ object SosMessageApi {
           case None => None
         }
 
-        val categories = SosMessage.publishedCategories(appName);
+        val categories = SosMessage.publishedCategories(appName)
+        EventLogger.logEvent(computeEventData(req, "getPublishedCategories", None))
         val json = ("meta", ("code", 200)) ~
           ("response", (("count", categories.size) ~ ("items", toJSON(categories))))
         Ok ~> Json(json)
@@ -41,6 +45,7 @@ object SosMessageApi {
           SosMessage.randomMessage(id, uid) match {
             case None => NoContent
             case Some(message) => {
+              EventLogger.logEvent(computeEventData(req, "getRandomMessage", Some(id)))
               val json = ("meta", ("code", 200)) ~
                 ("response", toJSON(message))
               Ok ~> Json(json)
@@ -64,6 +69,7 @@ object SosMessageApi {
 
         if (SosMessage.categoryExists(id)) {
           val messages = SosMessage.messages(id, uid)
+          EventLogger.logEvent(computeEventData(req, "getMessages", Some(id)))
           val json = ("meta", ("code", 200)) ~
             ("response", ("count", messages.size) ~ ("items", toJSON(messages)))
           Ok ~> Json(json)
@@ -89,6 +95,7 @@ object SosMessageApi {
 
         if (SosMessage.categoryExists(id)) {
           val messages = SosMessage.bestMessages(id, uid, limit)
+          EventLogger.logEvent(computeEventData(req, "getBestMessages", Some(id)))
           val json = ("meta", ("code", 200)) ~
             ("response", ("count", messages.size) ~ ("items", toJSON(messages)))
           Ok ~> Json(json)
@@ -114,6 +121,7 @@ object SosMessageApi {
 
         if (SosMessage.categoryExists(id)) {
           val messages = SosMessage.worstMessages(id, uid, limit)
+          EventLogger.logEvent(computeEventData(req, "getWorstMessages", Some(id)))
           val json = ("meta", ("code", 200)) ~
             ("response", ("count", messages.size) ~ ("items", toJSON(messages)))
           Ok ~> Json(json)
@@ -141,6 +149,7 @@ object SosMessageApi {
             case None => None
           }
           SosMessage.addMessage(categoryId, text, contributorName)
+          EventLogger.logEvent(computeEventData(req, "postMessage", Some(categoryId)))
           val json = ("meta", ("code", 200)) ~
             ("response", JObject(List()))
           Ok ~> Json(json)
@@ -165,6 +174,7 @@ object SosMessageApi {
           val uid = form("uid")(0)
           val rating = if (form("rating")(0).toInt > 5) 5 else form("rating")(0).toInt
           val message = SosMessage.rateMessage(messageId, uid, rating)
+          EventLogger.logEvent(computeEventData(req, "rateMessage", Some(messageId)))
           val json = ("meta", ("code", 200)) ~
             ("response", toJSON(message))
           Ok ~> Json(json)
@@ -194,6 +204,7 @@ object SosMessageApi {
           } else {
             val rating = if (vote == 1) 5 else 1
             val message = SosMessage.rateMessage(messageId, uid, rating)
+            EventLogger.logEvent(computeEventData(req, "voteMessage", Some(messageId)))
             val json = ("meta", ("code", 200)) ~
               ("response", toJSON(message))
             Ok ~> Json(json)
@@ -217,6 +228,7 @@ object SosMessageApi {
         }
 
         val comments = SosMessage.comments(messageId, offset, limit)
+        EventLogger.logEvent(computeEventData(req, "getComments", Some(messageId)))
         val json = ("meta", ("code", 200)) ~
           ("response", ("count", comments.size) ~ ("items", toJSON(comments)))
         Ok ~> Json(json)
@@ -244,6 +256,7 @@ object SosMessageApi {
             case None => None
           }
           SosMessage.addComment(messageId, uid, text, author)
+          EventLogger.logEvent(computeEventData(req, "postComment", Some(messageId)))
           val json = ("meta", ("code", 200)) ~
             ("response", JObject(List()))
           Ok ~> Json(json)
@@ -261,7 +274,8 @@ object SosMessageApi {
           case None => None
         }
 
-        val announcements = SosMessage.publishedAnnouncements(appName);
+        val announcements = SosMessage.publishedAnnouncements(appName)
+        EventLogger.logEvent(computeEventData(req, "getAnnouncements", None))
         val json = ("meta", ("code", 200)) ~
           ("response", ("count", announcements.size) ~ ("items", toJSON(announcements)))
         Ok ~> Json(json)
@@ -285,6 +299,37 @@ object SosMessageApi {
       ("errorDetails", errorDetails)) ~
       ("response", JObject(List()))
     Json(json)
+  }
+
+  private[this] def computeEventData(req: HttpRequest[Any], action: String,
+    targetObject: Option[String]): Map[String, Any] = {
+    val userAgent = UserAgent.apply(req)
+    val (appVersion, os) = userAgent match {
+      case Some(ua) => {
+        val AppVersion = """sosmessage/(.+?) .*""".r
+        try {
+          val AppVersion(version) = ua
+          (version.toInt, "ios")
+        } catch {
+          case e: MatchError => (0, "unknown")
+        }
+      }
+      case None => (0, "unknown")
+    }
+
+    val Params(form) = req
+    val uid = form.get("uid") match {
+      case Some(param) => param(0)
+      case None => ""
+    }
+    val appName = form.get("appname") match {
+      case Some(param) => param(0)
+      case None => ""
+    }
+
+    Map("apiVersion" -> ApiVersion, "appVersion" -> appVersion, "appOs" -> os,
+      "appName" -> appName, "uid" -> uid, "action" -> action,
+      "targetObject" -> targetObject.getOrElse(""), "createdAt" -> new Date())
   }
 
 }

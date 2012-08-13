@@ -11,6 +11,7 @@ object TestDB {
     DB.drop(CategoriesCollectionName)
     DB.drop(CommentsCollectionName)
     DB.drop(AnnouncementsCollectionName)
+    DB.drop(EventLogger.EventlogsCollectionName)
 
     createCategories()
     createMessages()
