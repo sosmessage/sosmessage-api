@@ -19,8 +19,8 @@ object TestDB {
   }
 
   def createCategories() {
-    val smdcAppKey = "apps.smdc"
-    val smdtAppKey = "apps.smdt"
+    val smdcAppKey = "apps.smdc_fr"
+    val smdtAppKey = "apps.smdt_fr"
 
     DB.collection(CategoriesCollectionName) {
       c =>
@@ -182,8 +182,8 @@ object TestDB {
   }
 
   def createAnnouncements() {
-    val smdcAppKey = "apps.smdc"
-    val smdtAppKey = "apps.smdt"
+    val smdcAppKey = "apps.smdc_fr"
+    val smdtAppKey = "apps.smdt_fr"
 
     DB.collection(AnnouncementsCollectionName) {
       c =>

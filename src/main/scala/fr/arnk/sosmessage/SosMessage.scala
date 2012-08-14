@@ -28,7 +28,7 @@ case class Announcement(dbObject: DBObject)
 object SosMessage {
   import SosMessageCollections._
 
-  val DefaultSosMessageAppName = "smdc"
+  val DefaultSosMessageAppName = "smdc_fr"
 
   val random = new Random()
 

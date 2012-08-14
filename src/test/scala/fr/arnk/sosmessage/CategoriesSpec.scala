@@ -42,7 +42,7 @@ object CategoriesSpec extends SosMessageSpec {
     }
 
     "retrieve ordered published categories for the smdt appname" in {
-      val resp = http(host / "api" / "v2" / "categories" <<? Map("appname" -> "smdt") as_str)
+      val resp = http(host / "api" / "v2" / "categories" <<? Map("appname" -> "smdt_fr") as_str)
       val json = parse(resp)
 
       json \ "meta" \ "code" must_== JInt(200)

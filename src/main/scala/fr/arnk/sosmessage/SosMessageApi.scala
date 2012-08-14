@@ -13,13 +13,15 @@ object SosMessageApi {
 
   val ApiVersion = 2
 
+  val DEFAULT_LANG_SUFFIX = "_fr"
+
   // Categories
   def publishedCategories: Cycle.Intent[Any, Any] = {
     case req @ GET(Path("/api/v2/categories")) =>
       withErrorHandling {
         val Params(form) = req
         val appName = form.get("appname") match {
-          case Some(params) => Some(params(0))
+          case Some(params) => Some(computeFullAppName(params(0)))
           case None => None
         }
 
@@ -270,7 +272,7 @@ object SosMessageApi {
       withErrorHandling {
         val Params(form) = req
         val appName = form.get("appname") match {
-          case Some(params) => Some(params(0))
+          case Some(params) => Some(computeFullAppName(params(0)))
           case None => None
         }
 
@@ -323,13 +325,23 @@ object SosMessageApi {
       case None => ""
     }
     val appName = form.get("appname") match {
-      case Some(param) => param(0)
+      case Some(param) => {
+        computeFullAppName(param(0))
+      }
       case None => ""
     }
 
     Map("apiVersion" -> ApiVersion, "appVersion" -> appVersion, "appOs" -> os,
       "appName" -> appName, "uid" -> uid, "action" -> action,
       "targetObject" -> targetObject.getOrElse(""), "createdAt" -> new Date())
+  }
+
+  private[this] def computeFullAppName(appName: String) = {
+    if (appName.contains("_")) {
+      appName
+    } else {
+      appName + DEFAULT_LANG_SUFFIX
+    }
   }
 
 }

@@ -12,7 +12,7 @@ object EventLogsSpec extends SosMessageSpec {
 
     "store event logs when getting categories" in {
       http(host / "api" / "v2" / "categories"
-        <<? Map("appname" -> "smdc+fr", "uid" -> "ios1") as_str)
+        <<? Map("appname" -> "smdc_fr", "uid" -> "ios1") as_str)
 
       waitForEventLogs()
 
@@ -24,7 +24,7 @@ object EventLogsSpec extends SosMessageSpec {
 
       val eventLog = eventLogs(0)
       eventLog.get("action") must_== "getPublishedCategories"
-      eventLog.get("appName") must_== "smdc+fr"
+      eventLog.get("appName") must_== "smdc_fr"
       eventLog.get("uid") must_== "ios1"
       eventLog.get("apiVersion") must_== 2
       eventLog.get("appOs") must_== "unknown"
@@ -38,7 +38,7 @@ object EventLogsSpec extends SosMessageSpec {
       }
       val categoryId = firstCategory.get("_id").toString
       http(host / "api" / "v2" / "categories" / categoryId / "message"
-        <<? Map("appname" -> "smdc+fr", "uid" -> "ios1") as_str)
+        <<? Map("appname" -> "smdc_fr", "uid" -> "ios1") as_str)
 
       waitForEventLogs()
 
@@ -50,7 +50,7 @@ object EventLogsSpec extends SosMessageSpec {
 
       val eventLog = eventLogs(0)
       eventLog.get("action") must_== "getRandomMessage"
-      eventLog.get("appName") must_== "smdc+fr"
+      eventLog.get("appName") must_== "smdc_fr"
       eventLog.get("uid") must_== "ios1"
       eventLog.get("apiVersion") must_== 2
       eventLog.get("appOs") must_== "unknown"
@@ -65,7 +65,7 @@ object EventLogsSpec extends SosMessageSpec {
       }
       val categoryId = secondCategory.get("_id").toString
       http(host / "api" / "v2" / "categories" / categoryId / "messages"
-        <<? Map("appname" -> "smdc+fr", "uid" -> "ios1") as_str)
+        <<? Map("appname" -> "smdc_fr", "uid" -> "ios1") as_str)
 
       waitForEventLogs()
 
@@ -77,7 +77,7 @@ object EventLogsSpec extends SosMessageSpec {
 
       val eventLog = eventLogs(0)
       eventLog.get("action") must_== "getMessages"
-      eventLog.get("appName") must_== "smdc+fr"
+      eventLog.get("appName") must_== "smdc_fr"
       eventLog.get("uid") must_== "ios1"
       eventLog.get("apiVersion") must_== 2
       eventLog.get("appOs") must_== "unknown"
@@ -92,7 +92,7 @@ object EventLogsSpec extends SosMessageSpec {
       }
       val categoryId = firstCategory.get("_id").toString
       http(host / "api" / "v2" / "categories" / categoryId / "best"
-        <<? Map("appname" -> "smdc+fr", "uid" -> "ios1") as_str)
+        <<? Map("appname" -> "smdc_fr", "uid" -> "ios1") as_str)
 
       waitForEventLogs()
 
@@ -104,7 +104,7 @@ object EventLogsSpec extends SosMessageSpec {
 
       val eventLog = eventLogs(0)
       eventLog.get("action") must_== "getBestMessages"
-      eventLog.get("appName") must_== "smdc+fr"
+      eventLog.get("appName") must_== "smdc_fr"
       eventLog.get("uid") must_== "ios1"
       eventLog.get("apiVersion") must_== 2
       eventLog.get("appOs") must_== "unknown"
@@ -119,7 +119,7 @@ object EventLogsSpec extends SosMessageSpec {
       }
       val categoryId = thirdCategory.get("_id").toString
       http(host / "api" / "v2" / "categories" / categoryId / "worst"
-        <<? Map("appname" -> "smdc+fr", "uid" -> "ios1") as_str)
+        <<? Map("appname" -> "smdc_fr", "uid" -> "ios1") as_str)
 
       waitForEventLogs()
 
@@ -131,7 +131,7 @@ object EventLogsSpec extends SosMessageSpec {
 
       val eventLog = eventLogs(0)
       eventLog.get("action") must_== "getWorstMessages"
-      eventLog.get("appName") must_== "smdc+fr"
+      eventLog.get("appName") must_== "smdc_fr"
       eventLog.get("uid") must_== "ios1"
       eventLog.get("apiVersion") must_== 2
       eventLog.get("appOs") must_== "unknown"
@@ -146,7 +146,7 @@ object EventLogsSpec extends SosMessageSpec {
       }
       val categoryId = firstCategory.get("_id").toString
       http(host / "api" / "v2" / "categories" / categoryId / "message"
-        << Map("text" -> "test message", "appname" -> "smdc+fr", "uid" -> "android1") >|)
+        << Map("text" -> "test message", "appname" -> "smdc_fr", "uid" -> "android1") >|)
 
       waitForEventLogs()
 
@@ -158,7 +158,7 @@ object EventLogsSpec extends SosMessageSpec {
 
       val eventLog = eventLogs(0)
       eventLog.get("action") must_== "postMessage"
-      eventLog.get("appName") must_== "smdc+fr"
+      eventLog.get("appName") must_== "smdc_fr"
       eventLog.get("uid") must_== "android1"
       eventLog.get("apiVersion") must_== 2
       eventLog.get("appOs") must_== "unknown"
@@ -173,7 +173,7 @@ object EventLogsSpec extends SosMessageSpec {
       }
       val messageId = message.get("_id").toString
       http(host / "api" / "v2" / "messages" / messageId / "rate"
-        << Map("uid" -> "iphone1", "rating" -> "4", "appname" -> "smdc+fr") >|)
+        << Map("uid" -> "iphone1", "rating" -> "4", "appname" -> "smdc_fr") >|)
 
       waitForEventLogs()
 
@@ -185,7 +185,7 @@ object EventLogsSpec extends SosMessageSpec {
 
       val eventLog = eventLogs(0)
       eventLog.get("action") must_== "rateMessage"
-      eventLog.get("appName") must_== "smdc+fr"
+      eventLog.get("appName") must_== "smdc_fr"
       eventLog.get("uid") must_== "iphone1"
       eventLog.get("apiVersion") must_== 2
       eventLog.get("appOs") must_== "unknown"
@@ -200,7 +200,7 @@ object EventLogsSpec extends SosMessageSpec {
       }
       val messageId = message.get("_id").toString
       http(host / "api" / "v2" / "messages" / messageId / "vote"
-        << Map("uid" -> "iphone1", "vote" -> "1", "appname" -> "smdc+en") >|)
+        << Map("uid" -> "iphone1", "vote" -> "1", "appname" -> "smdc_en") >|)
 
       waitForEventLogs()
 
@@ -212,7 +212,7 @@ object EventLogsSpec extends SosMessageSpec {
 
       val eventLog = eventLogs(0)
       eventLog.get("action") must_== "voteMessage"
-      eventLog.get("appName") must_== "smdc+en"
+      eventLog.get("appName") must_== "smdc_en"
       eventLog.get("uid") must_== "iphone1"
       eventLog.get("apiVersion") must_== 2
       eventLog.get("appOs") must_== "unknown"
@@ -227,7 +227,7 @@ object EventLogsSpec extends SosMessageSpec {
       }
       val messageId = message.get("_id").toString
       http(host / "api" / "v2" / "messages" / messageId / "comments"
-        <<? Map("appname" -> "smdc+fr", "uid" -> "ios1") as_str)
+        <<? Map("appname" -> "smdc_fr", "uid" -> "ios1") as_str)
 
       waitForEventLogs()
 
@@ -239,7 +239,7 @@ object EventLogsSpec extends SosMessageSpec {
 
       val eventLog = eventLogs(0)
       eventLog.get("action") must_== "getComments"
-      eventLog.get("appName") must_== "smdc+fr"
+      eventLog.get("appName") must_== "smdc_fr"
       eventLog.get("uid") must_== "ios1"
       eventLog.get("apiVersion") must_== 2
       eventLog.get("appOs") must_== "unknown"
@@ -254,7 +254,7 @@ object EventLogsSpec extends SosMessageSpec {
       }
       val messageId = message.get("_id").toString
       http(host / "api" / "v2" / "messages" / messageId / "comments"
-        << Map("text" -> "Bender's comment", "author" -> "Bender", "uid" -> "android1", "appname" -> "smdc+en") >|)
+        << Map("text" -> "Bender's comment", "author" -> "Bender", "uid" -> "android1", "appname" -> "smdc_en") >|)
 
       waitForEventLogs()
 
@@ -266,7 +266,7 @@ object EventLogsSpec extends SosMessageSpec {
 
       val eventLog = eventLogs(0)
       eventLog.get("action") must_== "postComment"
-      eventLog.get("appName") must_== "smdc+en"
+      eventLog.get("appName") must_== "smdc_en"
       eventLog.get("uid") must_== "android1"
       eventLog.get("apiVersion") must_== 2
       eventLog.get("appOs") must_== "unknown"
@@ -288,7 +288,7 @@ object EventLogsSpec extends SosMessageSpec {
 
       val eventLog = eventLogs(0)
       eventLog.get("action") must_== "getAnnouncements"
-      eventLog.get("appName") must_== "smdt"
+      eventLog.get("appName") must_== "smdt_fr"
       eventLog.get("uid") must_== "iphone2"
       eventLog.get("apiVersion") must_== 2
       eventLog.get("appOs") must_== "unknown"

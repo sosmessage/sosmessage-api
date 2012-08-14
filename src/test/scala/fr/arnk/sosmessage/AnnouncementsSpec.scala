@@ -18,7 +18,7 @@ object AnnouncementsSpec extends SosMessageSpec {
     }
 
     "retrieve only published announcements for given app" in {
-      val resp = http(host / "api" / "v2" / "announcements" <<? Map("appname" -> "smdt") as_str)
+      val resp = http(host / "api" / "v2" / "announcements" <<? Map("appname" -> "smdt_fr") as_str)
       val json = parse(resp)
 
       json \ "meta" \ "code" must_== JInt(200)
