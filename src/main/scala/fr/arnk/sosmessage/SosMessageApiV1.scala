@@ -13,7 +13,7 @@ object SosMessageApiV1 {
     case req @ GET(Path("/api/v1/categories")) =>
       val Params(form) = req
       val appName = form.get("appname") match {
-        case Some(params) => Some(params(0))
+        case Some(params) => Some(computeFullAppName(params(0)))
         case None => None
       }
 
@@ -170,7 +170,7 @@ object SosMessageApiV1 {
     case req @ GET(Path("/api/v1/announcements")) =>
       val Params(form) = req
       val appName = form.get("appname") match {
-        case Some(params) => Some(params(0))
+        case Some(params) => Some(computeFullAppName(params(0)))
         case None => None
       }
 
@@ -184,4 +184,12 @@ object SosMessageApiV1 {
 
   def toJSON[T](xs: Seq[T])(implicit converter: JSONConverter[T]) =
     xs.map(o => converter.toJSON(o))
+
+  private[this] def computeFullAppName(appName: String) = {
+    if (appName.contains("_")) {
+      appName
+    } else {
+      appName + DEFAULT_LANG_SUFFIX
+    }
+  }
 }
