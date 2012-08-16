@@ -8,6 +8,8 @@ import StandardConverters._
 
 object SosMessageApiV1 {
 
+  val DEFAULT_LANG_SUFFIX = "_fr"
+
   // Categories
   def publishedCategories: Cycle.Intent[Any, Any] = {
     case req @ GET(Path("/api/v1/categories")) =>
