@@ -311,7 +311,7 @@ object SosMessageApi {
         val AppVersion = """sosmessage/(.+?) .*""".r
         try {
           val AppVersion(version) = ua
-          (version.toInt, "ios")
+          (version, "ios")
         } catch {
           case e: MatchError => (0, "unknown")
         }
