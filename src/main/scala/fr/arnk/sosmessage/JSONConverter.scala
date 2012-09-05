@@ -1,6 +1,6 @@
 package fr.arnk.sosmessage
 
-import com.mongodb.casbah._
+import com.mongodb.casbah.Imports._
 import net.liftweb.json.JsonAST._
 import net.liftweb.json.JsonDSL._
 import java.util.Date
@@ -33,10 +33,10 @@ object StandardConverters {
         ("modifiedAt", dbObject.get("modifiedAt").asInstanceOf[Date].getTime) ~
         ("contributorName", dbObject.get("contributorName").toString) ~
         ("commentsCount", dbObject.get("commentsCount").asInstanceOf[Long]) ~
-        ("vote", ("plus", dbObject.get("votePlus").asInstanceOf[Double].toLong) ~
-          ("minus", dbObject.get("voteMinus").asInstanceOf[Double].toLong) ~
-          ("userVote", dbObject.get("userVote").asInstanceOf[Double].toLong)) ~
-          ("rating", ("count", dbObject.get("ratingCount").asInstanceOf[Double].toLong) ~
+        ("vote", ("plus", dbObject.get("votePlus").asInstanceOf[Int]) ~
+          ("minus", dbObject.get("voteMinus").asInstanceOf[Int]) ~
+          ("userVote", dbObject.get("userVote").asInstanceOf[Int])) ~
+          ("rating", ("count", dbObject.get("ratingCount").asInstanceOf[Int]) ~
             ("value", dbObject.get("rating").asInstanceOf[Double]))
     }
   }

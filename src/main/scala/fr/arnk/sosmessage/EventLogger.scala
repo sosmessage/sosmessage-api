@@ -1,8 +1,7 @@
 package fr.arnk.sosmessage
 
-import akka.actor.{Actor, Props, ActorSystem}
-import com.mongodb.casbah._
-
+import akka.actor.{ Actor, Props, ActorSystem }
+import com.mongodb.casbah.Imports._
 
 case class Event(data: Map[String, Any])
 

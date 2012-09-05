@@ -1,17 +1,11 @@
 package fr.arnk.sosmessage
 
 import util.Random
-import akka.actor.{ Props, ActorSystem }
-import com.mongodb.casbah._
-import net.liftweb.json.JsonAST._
-import net.liftweb.json.JsonDSL._
 import com.mongodb.DBObject
-import map_reduce.MapReduceStandardOutput
 import java.util.Date
 import org.bson.types.ObjectId
-import unfiltered.request.Params
-import unfiltered.response.NoContent
-import MapReduce._
+import com.mongodb.casbah.commons.MongoDBObject
+import com.mongodb.casbah.query.Imports._
 
 object SosMessageCollections {
   val MessagesCollectionName = "messages"
@@ -21,11 +15,15 @@ object SosMessageCollections {
 }
 
 case class Category(dbObject: DBObject)
+
 case class Message(dbObject: DBObject)
+
 case class Comment(dbObject: DBObject)
+
 case class Announcement(dbObject: DBObject)
 
 object SosMessage {
+
   import SosMessageCollections._
 
   val DefaultSosMessageAppName = "smdc_fr"
@@ -71,28 +69,16 @@ object SosMessage {
   }
 
   def randomMessage(categoryId: String, uid: Option[String]): Option[Message] = {
-    import MapReduce._
     DB.collection(MessagesCollectionName) {
       c =>
         val q = MongoDBObject("categoryId" -> new ObjectId(categoryId), "state" -> "approved")
         val count = c.find(q, MongoDBObject("_id" -> 1)).count
         val skip = random.nextInt(if (count <= 0) 1 else count)
 
-        val keys = MongoDBObject("_id" -> 1)
-        val messages = c.find(q, keys).limit(-1).skip(skip)
+        val messages = c.find(q).limit(-1).skip(skip)
         if (!messages.isEmpty) {
-          val message = messages.next()
-
-          val jsScope = uid match {
-            case Some(u) => Some(MongoDBObject("uid" -> u))
-            case None => Some(MongoDBObject("uid" -> ""))
-          }
-
-          val q = MongoDBObject("_id" -> message.get("_id"))
-          val res = c.mapReduce(mapJS, reduceJS, MapReduceInlineOutput,
-            finalizeFunction = Some(finalizeJS), query = Some(q), jsScope = jsScope).next()
-
-          val json = Message(res.get("value").asInstanceOf[DBObject])
+          val message = computeRatingInformation(messages.next(), uid)
+          val json = Message(message)
           Some(json)
         } else {
           None
@@ -101,68 +87,32 @@ object SosMessage {
   }
 
   def messages(categoryId: String, uid: Option[String]): Seq[Message] = {
-    val jsScope = uid match {
-      case Some(u) => Some(MongoDBObject("uid" -> u))
-      case None => Some(MongoDBObject("uid" -> ""))
-    }
-
-    val q = MongoDBObject("categoryId" -> new ObjectId(categoryId), "state" -> "approved")
-    val resultCollectionName = MapReduce.MapReduceMessagesCollectionName + categoryId
     DB.collection(MessagesCollectionName) {
       c =>
-        c.mapReduce(mapJS, reduceJS, MapReduceStandardOutput(resultCollectionName),
-          finalizeFunction = Some(finalizeJS), query = Some(q), jsScope = jsScope)
-    }
-
-    val order = MongoDBObject("value.createdAt" -> -1)
-    DB.collection(resultCollectionName) {
-      c =>
-        c.find().sort(order).toSeq.map(message =>
-          Message(message.get("value").asInstanceOf[DBObject]))
+        val q = MongoDBObject("categoryId" -> new ObjectId(categoryId), "state" -> "approved")
+        val order = MongoDBObject("createdAt" -> -1)
+        c.find(q).sort(order).toSeq.map(message =>
+          Message(computeRatingInformation(message, uid)))
     }
   }
 
   def bestMessages(categoryId: String, uid: Option[String], limit: Option[Int]): Seq[Message] = {
-    val jsScope = uid match {
-      case Some(u) => Some(MongoDBObject("uid" -> u))
-      case None => Some(MongoDBObject("uid" -> ""))
-    }
-
-    val q = MongoDBObject("categoryId" -> new ObjectId(categoryId), "state" -> "approved")
-    val resultCollectionName = MapReduceMessagesCollectionName + categoryId
     DB.collection(MessagesCollectionName) {
       c =>
-        c.mapReduce(mapJS, reduceJS, MapReduceStandardOutput(resultCollectionName),
-          finalizeFunction = Some(finalizeJS), query = Some(q), jsScope = jsScope)
-    }
-
-    val order = MongoDBObject("value.rating" -> -1)
-    DB.collection(resultCollectionName) {
-      c =>
-        c.find().sort(order).limit(limit.getOrElse(10)).toSeq.map(message =>
-          Message(message.get("value").asInstanceOf[DBObject]))
+        val q = MongoDBObject("categoryId" -> new ObjectId(categoryId), "state" -> "approved")
+        val messages = c.find(q).limit(limit.getOrElse(10)).toSeq.map(message =>
+          Message(computeRatingInformation(message, uid)))
+        messages.sortBy(m => m.dbObject.get("rating").asInstanceOf[Double]).reverse
     }
   }
 
   def worstMessages(categoryId: String, uid: Option[String], limit: Option[Int]): Seq[Message] = {
-    val jsScope = uid match {
-      case Some(u) => Some(MongoDBObject("uid" -> u))
-      case None => Some(MongoDBObject("uid" -> ""))
-    }
-
-    val q = MongoDBObject("categoryId" -> new ObjectId(categoryId), "state" -> "approved")
-    val resultCollectionName = MapReduceMessagesCollectionName + categoryId
     DB.collection(MessagesCollectionName) {
       c =>
-        c.mapReduce(mapJS, reduceJS, MapReduceStandardOutput(resultCollectionName),
-          finalizeFunction = Some(finalizeJS), query = Some(q), jsScope = jsScope)
-    }
-
-    val order = MongoDBObject("value.rating" -> 1)
-    DB.collection(resultCollectionName) {
-      c =>
-        c.find().sort(order).limit(limit.getOrElse(10)).toSeq.map(message =>
-          Message(message.get("value").asInstanceOf[DBObject]))
+        val q = MongoDBObject("categoryId" -> new ObjectId(categoryId), "state" -> "approved")
+        val messages = c.find(q).limit(limit.getOrElse(10)).toSeq.map(message =>
+          Message(computeRatingInformation(message, uid)))
+        messages.sortBy(m => m.dbObject.get("rating").asInstanceOf[Double]).reverse
     }
   }
 
@@ -196,6 +146,51 @@ object SosMessage {
     }
   }
 
+  def computeRatingInformation(message: MongoDBObject, uid: Option[String]): MongoDBObject = {
+    message.get("ratings") match {
+      case None => {
+        val builder = MongoDBObject.newBuilder
+        builder += ("votePlus" -> 0)
+        builder += ("voteMinus" -> 0)
+        builder += ("userVote" -> 0)
+        builder += ("ratingCount" -> 0)
+        builder += ("rating" -> 0.0)
+        message.putAll(builder.result())
+      }
+      case Some(r) => {
+        var count = 0
+        var total = 0.0
+        var votePlus = 0
+        var voteMinus = 0
+        var userVote = 0
+
+        val ratings = new MongoDBObject(r.asInstanceOf[DBObject])
+        for ((k, v) <- ratings) {
+          val value = v.asInstanceOf[Int]
+          val vote = if (value == 1.0) -1 else 1
+          if (uid.isDefined && k.equals(uid.get)) userVote = vote
+
+          if (vote == 1) votePlus += 1 else voteMinus += 1
+          count += 1
+          total += value
+        }
+
+        val builder = MongoDBObject.newBuilder
+        builder += ("votePlus" -> votePlus)
+        builder += ("voteMinus" -> voteMinus)
+        builder += ("userVote" -> userVote)
+
+        val avg = if (total == 0 || count == 0) 0.0 else total * 1.0 / count
+        builder += ("ratingCount" -> count)
+        builder += ("rating" -> avg)
+        message.putAll(builder.result())
+
+        message.removeField("ratings")
+      }
+    }
+    message
+  }
+
   // Rating
   def rateMessage(messageId: String, uid: String, rating: Int): Message = {
     val key = "ratings." + uid.replaceAll("\\.", "-")
@@ -203,11 +198,7 @@ object SosMessage {
       c =>
         val q = MongoDBObject("_id" -> new ObjectId(messageId))
         c.update(q, $set(key -> rating), false, false)
-
-        val jsScope = Some(MongoDBObject("uid" -> uid))
-        val res = c.mapReduce(mapJS, reduceJS, MapReduceInlineOutput,
-          finalizeFunction = Some(finalizeJS), query = Some(q), jsScope = jsScope).next()
-        Message(res.get("value").asInstanceOf[DBObject])
+        Message(computeRatingInformation(c.findOne(q).get, Some(uid)))
     }
   }
 

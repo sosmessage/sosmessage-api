@@ -2,17 +2,9 @@ package fr.arnk.sosmessage.v1
 
 import fr.arnk.sosmessage._
 
-import org.specs._
-import unfiltered._
-import org.streum.configrity.Configuration
-import com.mongodb.casbah._
 import net.liftweb.json._
-import java.util.Date
-import com.mongodb.{ BasicDBObject, DBObject }
 
 object AnnouncementsSpec extends SosMessageSpec {
-
-  import SosMessageCollections._
 
   "The announcements API v1" should {
     doBefore {

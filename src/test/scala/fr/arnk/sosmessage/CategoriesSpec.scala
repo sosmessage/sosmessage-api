@@ -3,7 +3,7 @@ package fr.arnk.sosmessage
 import org.specs._
 import unfiltered._
 import org.streum.configrity.Configuration
-import com.mongodb.casbah._
+import com.mongodb.casbah.Imports._
 import net.liftweb.json._
 import java.util.Date
 import com.mongodb.{ BasicDBObject, DBObject }

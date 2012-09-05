@@ -289,6 +289,7 @@ object SosMessageApi {
       f ~> ResponseHeader("Access-Control-Allow-Origin", "*" :: Nil)
     } catch {
       case e: Exception => {
+        println(e.getStackTraceString)
         val json = ("meta", ("code", 500) ~ ("errorType", "ServerError") ~
           ("errorDetails", e.getMessage)) ~ ("response", JObject(List()))
         InternalServerError ~> Json(json) ~> ResponseHeader("Access-Control-Allow-Origin", "*" :: Nil)

@@ -1,6 +1,6 @@
 package fr.arnk.sosmessage
 
-import com.mongodb.casbah._
+import com.mongodb.casbah.Imports._
 import java.util.Date
 
 object TestDB {
