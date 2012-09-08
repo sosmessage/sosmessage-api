@@ -158,8 +158,8 @@ object SosMessage {
         message.putAll(builder.result())
       }
       case Some(r) => {
-        var count = 0
-        var total = 0.0
+        var count: Long = 0
+        var total: Double = 0.0
         var votePlus = 0
         var voteMinus = 0
         var userVote = 0
@@ -180,7 +180,7 @@ object SosMessage {
         builder += ("voteMinus" -> voteMinus)
         builder += ("userVote" -> userVote)
 
-        val avg = if (total == 0 || count == 0) 0.0 else total * 1.0 / count
+        val avg = if (total == 0 || count == 0) 0.0 else total / count
         builder += ("ratingCount" -> count)
         builder += ("rating" -> avg)
         message.putAll(builder.result())
