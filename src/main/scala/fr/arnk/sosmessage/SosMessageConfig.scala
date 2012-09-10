@@ -1,6 +1,5 @@
 package fr.arnk.sosmessage
 
-import org.streum.configrity.Configuration
 import org.streum.configrity.converter.ValueConverter
 import org.streum.configrity._
 
