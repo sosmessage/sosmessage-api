@@ -329,7 +329,7 @@ object SosMessageApi {
       case Some(param) => {
         computeFullAppName(param(0))
       }
-      case None => ""
+      case None => "smdc_fr" // default
     }
 
     Map("apiVersion" -> ApiVersion, "appVersion" -> appVersion, "appOs" -> os,
