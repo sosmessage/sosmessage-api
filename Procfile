@@ -1,1 +1,1 @@
-web: sbt run
+web: target/start Web

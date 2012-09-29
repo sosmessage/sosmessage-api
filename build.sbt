@@ -1,8 +1,12 @@
+import com.typesafe.startscript.StartScriptPlugin
+
 organization := "fr.arnk"
 
 name := "sosmessage-api"
 
 version := "2.1-SNAPSHOT"
+
+seq(StartScriptPlugin.startScriptForClassesSettings: _*)
 
 seq(com.github.retronym.SbtOneJar.oneJarSettings: _*)
 
