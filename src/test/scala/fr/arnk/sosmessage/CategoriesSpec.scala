@@ -18,7 +18,7 @@ object CategoriesSpec extends SosMessageSpec {
     }
 
     "retrieve ordered published categories" in {
-      val resp = http(host / "api" / "v2" / "categories" as_str)
+      val resp = http(host / "v2" / "categories" as_str)
       val json = parse(resp)
 
       json \ "meta" \ "code" must_== JInt(200)
@@ -42,7 +42,7 @@ object CategoriesSpec extends SosMessageSpec {
     }
 
     "retrieve ordered published categories for the smdt appname" in {
-      val resp = http(host / "api" / "v2" / "categories" <<? Map("appname" -> "smdt_fr") as_str)
+      val resp = http(host / "v2" / "categories" <<? Map("appname" -> "smdt_fr") as_str)
       val json = parse(resp)
 
       json \ "meta" \ "code" must_== JInt(200)
@@ -62,7 +62,7 @@ object CategoriesSpec extends SosMessageSpec {
     }
 
     "retrieve no category for non existing app" in {
-      val resp = http(host / "api" / "v2" / "categories" <<? Map("appname" -> "nonExistingApp") as_str)
+      val resp = http(host / "v2" / "categories" <<? Map("appname" -> "nonExistingApp") as_str)
       val json = parse(resp)
 
       json \ "meta" \ "code" must_== JInt(200)

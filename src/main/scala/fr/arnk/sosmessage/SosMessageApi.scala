@@ -20,7 +20,7 @@ object SosMessageApi {
 
   // Categories
   def publishedCategories: Cycle.Intent[Any, Any] = {
-    case req @ GET(Path("/api/v2/categories")) =>
+    case req @ GET(Path("/v2/categories")) =>
       withErrorHandling {
         val Params(form) = req
         val appName = form.get("appname") match {
@@ -38,7 +38,7 @@ object SosMessageApi {
 
   // Messages
   def randomMessage: Cycle.Intent[Any, Any] = {
-    case req @ GET(Path(Seg("api" :: "v2" :: "categories" :: id :: "message" :: Nil))) =>
+    case req @ GET(Path(Seg("v2" :: "categories" :: id :: "message" :: Nil))) =>
       withErrorHandling {
         val Params(form) = req
         val uid = form.get("uid") match {
@@ -64,7 +64,7 @@ object SosMessageApi {
   }
 
   def messages: Cycle.Intent[Any, Any] = {
-    case req @ GET(Path(Seg("api" :: "v2" :: "categories" :: id :: "messages" :: Nil))) =>
+    case req @ GET(Path(Seg("v2" :: "categories" :: id :: "messages" :: Nil))) =>
       withErrorHandling {
         val Params(form) = req
         val uid = form.get("uid") match {
@@ -86,7 +86,7 @@ object SosMessageApi {
   }
 
   def bestMessages: Cycle.Intent[Any, Any] = {
-    case req @ GET(Path(Seg("api" :: "v2" :: "categories" :: id :: "best" :: Nil))) =>
+    case req @ GET(Path(Seg("v2" :: "categories" :: id :: "best" :: Nil))) =>
       withErrorHandling {
         val Params(form) = req
         val uid = form.get("uid") match {
@@ -112,7 +112,7 @@ object SosMessageApi {
   }
 
   def worstMessages: Cycle.Intent[Any, Any] = {
-    case req @ GET(Path(Seg("api" :: "v2" :: "categories" :: id :: "worst" :: Nil))) =>
+    case req @ GET(Path(Seg("v2" :: "categories" :: id :: "worst" :: Nil))) =>
       withErrorHandling {
         val Params(form) = req
         val uid = form.get("uid") match {
@@ -138,7 +138,7 @@ object SosMessageApi {
   }
 
   def postMessage: Cycle.Intent[Any, Any] = {
-    case req @ POST(Path(Seg("api" :: "v2" :: "categories" :: categoryId :: "message" :: Nil))) =>
+    case req @ POST(Path(Seg("v2" :: "categories" :: categoryId :: "message" :: Nil))) =>
       withErrorHandling {
         val Params(form) = req
         if (!form.contains("text")) {
@@ -163,7 +163,7 @@ object SosMessageApi {
   }
 
   def rateMessage: Cycle.Intent[Any, Any] = {
-    case req @ POST(Path(Seg("api" :: "v2" :: "messages" :: messageId :: "rate" :: Nil))) =>
+    case req @ POST(Path(Seg("v2" :: "messages" :: messageId :: "rate" :: Nil))) =>
       withErrorHandling {
         val Params(form) = req
         if (!SosMessage.messageExists(messageId)) {
@@ -188,7 +188,7 @@ object SosMessageApi {
   }
 
   def voteMessage: Cycle.Intent[Any, Any] = {
-    case req @ POST(Path(Seg("api" :: "v2" :: "messages" :: messageId :: "vote" :: Nil))) =>
+    case req @ POST(Path(Seg("v2" :: "messages" :: messageId :: "vote" :: Nil))) =>
       withErrorHandling {
         val Params(form) = req
         if (!SosMessage.messageExists(messageId)) {
@@ -220,7 +220,7 @@ object SosMessageApi {
 
   // Comments
   def commentsForMessage: Cycle.Intent[Any, Any] = {
-    case req @ GET(Path(Seg("api" :: "v2" :: "messages" :: messageId :: "comments" :: Nil))) =>
+    case req @ GET(Path(Seg("v2" :: "messages" :: messageId :: "comments" :: Nil))) =>
       withErrorHandling {
         val Params(form) = req
         val offset = form.get("offset") match {
@@ -241,7 +241,7 @@ object SosMessageApi {
   }
 
   def postComment: Cycle.Intent[Any, Any] = {
-    case req @ POST(Path(Seg("api" :: "v2" :: "messages" :: messageId :: "comments" :: Nil))) =>
+    case req @ POST(Path(Seg("v2" :: "messages" :: messageId :: "comments" :: Nil))) =>
       withErrorHandling {
         val Params(form) = req
         if (!form.contains("uid")) {
@@ -271,7 +271,7 @@ object SosMessageApi {
 
   // Announcements
   def publishedAnnouncements: Cycle.Intent[Any, Any] = {
-    case req @ GET(Path("/api/v2/announcements")) =>
+    case req @ GET(Path("/v2/announcements")) =>
       withErrorHandling {
         val Params(form) = req
         val appName = form.get("appname") match {

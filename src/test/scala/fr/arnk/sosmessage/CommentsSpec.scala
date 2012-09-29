@@ -21,15 +21,15 @@ object CommentsSpec extends SosMessageSpec {
       DB.collection(MessagesCollectionName) {
         c =>
           val aMessage = c.findOne(MongoDBObject("text" -> "First message in first category")).get
-          http(host / "api" / "v2" / "messages" / aMessage.get("_id").toString / "comments"
+          http(host / "v2" / "messages" / aMessage.get("_id").toString / "comments"
             << Map("text" -> "Bender's comment", "author" -> "Bender", "uid" -> "android1") >|)
-          http(host / "api" / "v2" / "messages" / aMessage.get("_id").toString / "comments"
+          http(host / "v2" / "messages" / aMessage.get("_id").toString / "comments"
             << Map("text" -> "Leela's comment", "author" -> "Leela", "uid" -> "iphone1") >|)
 
           val updatedMessage = c.findOne(MongoDBObject("text" -> "First message in first category")).get
           updatedMessage.asInstanceOf[BasicDBObject].getLong("commentsCount") must_== 2
 
-          val resp = http(host / "api" / "v2" / "messages" / updatedMessage.get("_id").toString / "comments" as_str)
+          val resp = http(host / "v2" / "messages" / updatedMessage.get("_id").toString / "comments" as_str)
           val json = parse(resp)
 
           json \ "meta" \ "code" must_== JInt(200)
@@ -58,7 +58,7 @@ object CommentsSpec extends SosMessageSpec {
       DB.collection(CategoriesCollectionName) {
         c =>
           val aCategory = c.findOne(MongoDBObject("name" -> "firstCategory")).get
-          val resp = http(host / "api" / "v2" / "messages" / aCategory.get("_id").toString / "comments"
+          val resp = http(host / "v2" / "messages" / aCategory.get("_id").toString / "comments"
             << Map("text" -> "Bender's comment", "author" -> "Bender", "uid" -> "android1") as_str)
           val json = parse(resp)
 
@@ -68,7 +68,7 @@ object CommentsSpec extends SosMessageSpec {
           json \ "response" must_== JObject(List())
       }
 
-      val resp = http(host / "api" / "v2" / "messages" / "nonExistingId" / "comments"
+      val resp = http(host / "v2" / "messages" / "nonExistingId" / "comments"
         << Map("text" -> "Bender's comment", "author" -> "Bender", "uid" -> "android1") as_str)
       val json = parse(resp)
 
@@ -81,7 +81,7 @@ object CommentsSpec extends SosMessageSpec {
       DB.collection(MessagesCollectionName) {
         c =>
           val aMessage = c.findOne(MongoDBObject("text" -> "First message in first category")).get
-          var resp = http(host / "api" / "v2" / "messages" / aMessage.get("_id").toString / "comments"
+          var resp = http(host / "v2" / "messages" / aMessage.get("_id").toString / "comments"
             << Map("author" -> "Bender", "uid" -> "android1") as_str)
           var json = parse(resp)
 
@@ -90,7 +90,7 @@ object CommentsSpec extends SosMessageSpec {
           json \ "meta" \ "errorDetails" must_== JString("The 'text' parameter is required.")
           json \ "response" must_== JObject(List())
 
-          resp = http(host / "api" / "v2" / "messages" / aMessage.get("_id").toString / "comments"
+          resp = http(host / "v2" / "messages" / aMessage.get("_id").toString / "comments"
             << Map("text" -> "Bender's comment", "author" -> "Bender") as_str)
           json = parse(resp)
 

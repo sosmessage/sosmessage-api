@@ -11,7 +11,7 @@ object EventLogsSpec extends SosMessageSpec {
     }
 
     "store event logs when getting categories" in {
-      http(host / "api" / "v2" / "categories"
+      http(host / "v2" / "categories"
         <<? Map("appname" -> "smdc_fr", "uid" -> "ios1") as_str)
 
       waitForEventLogs()
@@ -37,7 +37,7 @@ object EventLogsSpec extends SosMessageSpec {
           c.findOne(MongoDBObject("name" -> "firstCategory")).get
       }
       val categoryId = firstCategory.get("_id").toString
-      http(host / "api" / "v2" / "categories" / categoryId / "message"
+      http(host / "v2" / "categories" / categoryId / "message"
         <<? Map("appname" -> "smdc_fr", "uid" -> "ios1") as_str)
 
       waitForEventLogs()
@@ -64,7 +64,7 @@ object EventLogsSpec extends SosMessageSpec {
           c.findOne(MongoDBObject("name" -> "secondCategory")).get
       }
       val categoryId = secondCategory.get("_id").toString
-      http(host / "api" / "v2" / "categories" / categoryId / "messages"
+      http(host / "v2" / "categories" / categoryId / "messages"
         <<? Map("appname" -> "smdc_fr", "uid" -> "ios1") as_str)
 
       waitForEventLogs()
@@ -91,7 +91,7 @@ object EventLogsSpec extends SosMessageSpec {
           c.findOne(MongoDBObject("name" -> "firstCategory")).get
       }
       val categoryId = firstCategory.get("_id").toString
-      http(host / "api" / "v2" / "categories" / categoryId / "best"
+      http(host / "v2" / "categories" / categoryId / "best"
         <<? Map("appname" -> "smdc_fr", "uid" -> "ios1") as_str)
 
       waitForEventLogs()
@@ -118,7 +118,7 @@ object EventLogsSpec extends SosMessageSpec {
           c.findOne(MongoDBObject("name" -> "thirdCategory")).get
       }
       val categoryId = thirdCategory.get("_id").toString
-      http(host / "api" / "v2" / "categories" / categoryId / "worst"
+      http(host / "v2" / "categories" / categoryId / "worst"
         <<? Map("appname" -> "smdc_fr", "uid" -> "ios1") as_str)
 
       waitForEventLogs()
@@ -145,7 +145,7 @@ object EventLogsSpec extends SosMessageSpec {
           c.findOne(MongoDBObject("name" -> "firstCategory")).get
       }
       val categoryId = firstCategory.get("_id").toString
-      http(host / "api" / "v2" / "categories" / categoryId / "message"
+      http(host / "v2" / "categories" / categoryId / "message"
         << Map("text" -> "test message", "appname" -> "smdc_fr", "uid" -> "android1") >|)
 
       waitForEventLogs()
@@ -172,7 +172,7 @@ object EventLogsSpec extends SosMessageSpec {
           c.findOne(MongoDBObject("text" -> "Second message in second category")).get
       }
       val messageId = message.get("_id").toString
-      http(host / "api" / "v2" / "messages" / messageId / "rate"
+      http(host / "v2" / "messages" / messageId / "rate"
         << Map("uid" -> "iphone1", "rating" -> "4", "appname" -> "smdc_fr") >|)
 
       waitForEventLogs()
@@ -199,7 +199,7 @@ object EventLogsSpec extends SosMessageSpec {
           c.findOne(MongoDBObject("text" -> "Second message in second category")).get
       }
       val messageId = message.get("_id").toString
-      http(host / "api" / "v2" / "messages" / messageId / "vote"
+      http(host / "v2" / "messages" / messageId / "vote"
         << Map("uid" -> "iphone1", "vote" -> "1", "appname" -> "smdc_en") >|)
 
       waitForEventLogs()
@@ -226,7 +226,7 @@ object EventLogsSpec extends SosMessageSpec {
           c.findOne(MongoDBObject("text" -> "Second message in second category")).get
       }
       val messageId = message.get("_id").toString
-      http(host / "api" / "v2" / "messages" / messageId / "comments"
+      http(host / "v2" / "messages" / messageId / "comments"
         <<? Map("appname" -> "smdc_fr", "uid" -> "ios1") as_str)
 
       waitForEventLogs()
@@ -253,7 +253,7 @@ object EventLogsSpec extends SosMessageSpec {
           c.findOne(MongoDBObject("text" -> "Second message in second category")).get
       }
       val messageId = message.get("_id").toString
-      http(host / "api" / "v2" / "messages" / messageId / "comments"
+      http(host / "v2" / "messages" / messageId / "comments"
         << Map("text" -> "Bender's comment", "author" -> "Bender", "uid" -> "android1", "appname" -> "smdc_en") >|)
 
       waitForEventLogs()
@@ -275,7 +275,7 @@ object EventLogsSpec extends SosMessageSpec {
     }
 
     "store event logs when getting annoucements" in {
-      http(host / "api" / "v2" / "announcements"
+      http(host / "v2" / "announcements"
         <<? Map("appname" -> "smdt", "uid" -> "iphone2") as_str)
 
       waitForEventLogs()
