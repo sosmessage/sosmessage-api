@@ -6,7 +6,9 @@ version := "2.1-SNAPSHOT"
 
 seq(com.github.retronym.SbtOneJar.oneJarSettings: _*)
 
-resolvers += Classpaths.typesafeResolver
+resolvers ++= Seq(
+  "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
+)
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" % "akka-actor" % "2.0",

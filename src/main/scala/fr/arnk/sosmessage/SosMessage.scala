@@ -153,7 +153,7 @@ object SosMessage {
         builder += ("votePlus" -> 0)
         builder += ("voteMinus" -> 0)
         builder += ("userVote" -> 0)
-        builder += ("ratingCount" -> 0)
+        builder += ("ratingCount" -> 0L)
         builder += ("rating" -> 0.0)
         message.putAll(builder.result())
       }
