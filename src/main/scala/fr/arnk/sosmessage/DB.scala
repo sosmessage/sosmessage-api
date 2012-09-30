@@ -1,6 +1,6 @@
 package fr.arnk.sosmessage
 
-import com.mongodb.casbah.{MongoURI, MongoCollection, MongoConnection}
+import com.mongodb.casbah.{ MongoURI, MongoCollection, MongoConnection }
 import org.streum.configrity.Configuration
 
 object DB {
@@ -10,8 +10,7 @@ object DB {
   val DefaultMongoUri = "mongodb://localhost/sosmessage"
 
   lazy val db = {
-    val env = Configuration.environment
-    val uri = MongoURI(env(SosMessageMongoUriParam, DefaultMongoUri))
+    val uri = MongoURI(SosMessageConfig.get[String](SosMessageMongoUriParam).getOrElse(DefaultMongoUri))
     val mongo = MongoConnection(uri)
     val db = mongo(uri.database.getOrElse("sosmessage"))
     uri.username.map(name =>

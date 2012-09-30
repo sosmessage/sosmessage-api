@@ -7,10 +7,7 @@ import dispatch._
 class SosMessageSpec extends Specification with unfiltered.spec.netty.Served {
 
   // Initialize test config
-  SosMessageConfig.set("database.host", "127.0.0.1")
-  SosMessageConfig.set("database.port", 27017)
-  SosMessageConfig.set("database.name", "sosmessagedetest")
-  SosMessageConfig.set("server.port", 3000)
+  SosMessageConfig.set("SOS_MESSAGE_MONGO_URI", "mongodb://localhost/sosmessagedetest")
 
   def setup = {
     _.handler(netty.cycle.Planify {

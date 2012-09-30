@@ -5,8 +5,7 @@ import unfiltered._
 object AppServer {
 
   def main(args: Array[String]) {
-
-    netty.Http(SosMessageConfig.get[Int]("server.port").getOrElse(3000))
+    netty.Http(SosMessageConfig.get[Int]("PORT").getOrElse(3000))
       .handler(netty.cycle.Planify {
         SosMessageApi.publishedCategories orElse
           SosMessageApi.messages orElse SosMessageApi.randomMessage orElse

@@ -5,30 +5,22 @@ import org.streum.configrity._
 
 object SosMessageConfig {
 
-  private lazy val initialConfig: Configuration = {
-    val defaultConfig = Configuration("database.host" -> "127.0.0.1",
-      "database.port" -> 27017, "database.name" -> "sosmessage", "server.port" -> 3000)
+  val defaultConfig = Configuration("SOS_MESSAGE_MONGO_URI" -> "mongodb://localhost/sosmessage",
+    "PORT" -> 3000)
 
-    val systemConfig = Configuration.systemProperties
-    systemConfig.get[String]("sosmessage.configurationFile") match {
-      case None => defaultConfig
-      case Some(filename) =>
-        try {
-          Configuration.load(filename)
-        } catch {
-          case e: Exception => defaultConfig
-        }
-    }
-  }
+  val env = Configuration.environment
 
-  private var config: Configuration = initialConfig
+  private var config: Configuration = defaultConfig
 
   def apply[T](key: String)(implicit converter: ValueConverter[T]) = {
     get[T](key)
   }
 
   def get[T](key: String)(implicit converter: ValueConverter[T]) = {
-    config.get[T](key)
+    env.get[T](key) match {
+      case None => config.get[T](key)
+      case Some(s) => Some(s)
+    }
   }
 
   def set[T](key: String, value: T) = {
