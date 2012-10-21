@@ -7,7 +7,8 @@ object AppServer {
   def main(args: Array[String]) {
     netty.Http(SosMessageConfig.get[Int]("PORT").getOrElse(3000))
       .handler(netty.cycle.Planify {
-        SosMessageApi.publishedCategories orElse
+        SosMessageApi.ping orElse
+          SosMessageApi.publishedCategories orElse
           SosMessageApi.messages orElse SosMessageApi.randomMessage orElse
           SosMessageApi.bestMessages orElse SosMessageApi.worstMessages orElse
           SosMessageApi.postMessage orElse SosMessageApi.rateMessage orElse SosMessageApi.voteMessage orElse

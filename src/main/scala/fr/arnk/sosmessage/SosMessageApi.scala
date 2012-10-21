@@ -18,6 +18,11 @@ object SosMessageApi {
 
   val logger = LoggerFactory.getLogger("SosMessageApi")
 
+  def ping: Cycle.Intent[Any, Any] = {
+    case req @ GET(Path("/v2/ping")) =>
+      Ok ~> ResponseString("pong")
+  }
+
   // Categories
   def publishedCategories: Cycle.Intent[Any, Any] = {
     case req @ GET(Path("/v2/categories")) =>
