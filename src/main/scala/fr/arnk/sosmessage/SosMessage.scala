@@ -100,9 +100,8 @@ object SosMessage {
     DB.collection(MessagesCollectionName) {
       c =>
         val q = MongoDBObject("categoryId" -> new ObjectId(categoryId), "state" -> "approved")
-        val messages = c.find(q).limit(limit.getOrElse(10)).toSeq.map(message =>
-          Message(computeRatingInformation(message, uid)))
-        messages.sortBy(m => m.dbObject.get("rating").asInstanceOf[Double]).reverse
+        val messages = c.find(q).toSeq.map(message => Message(computeRatingInformation(message, uid)))
+        messages.sortBy(m => m.dbObject.get("score").asInstanceOf[Double]).reverse.slice(0, limit.getOrElse(10))
     }
   }
 
@@ -110,9 +109,8 @@ object SosMessage {
     DB.collection(MessagesCollectionName) {
       c =>
         val q = MongoDBObject("categoryId" -> new ObjectId(categoryId), "state" -> "approved")
-        val messages = c.find(q).limit(limit.getOrElse(10)).toSeq.map(message =>
-          Message(computeRatingInformation(message, uid)))
-        messages.sortBy(m => m.dbObject.get("rating").asInstanceOf[Double]).reverse
+        val messages = c.find(q).toSeq.map(message => Message(computeRatingInformation(message, uid)))
+        messages.sortBy(m => m.dbObject.get("score").asInstanceOf[Double]).slice(0, limit.getOrElse(10))
     }
   }
 
@@ -155,6 +153,7 @@ object SosMessage {
         builder += ("userVote" -> 0)
         builder += ("ratingCount" -> 0L)
         builder += ("rating" -> 0.0)
+        builder += ("score" -> 0.0)
         message.putAll(builder.result())
       }
       case Some(r) => {
@@ -168,7 +167,10 @@ object SosMessage {
         for ((k, v) <- ratings) {
           val value = v.asInstanceOf[Int]
           val vote = if (value == 1.0) -1 else 1
-          if (uid.isDefined && k.equals(uid.get)) userVote = vote
+          uid match {
+            case None =>
+            case Some(u) => if (k.equals(u)) userVote = vote
+          }
 
           if (vote == 1) votePlus += 1 else voteMinus += 1
           count += 1
@@ -183,6 +185,13 @@ object SosMessage {
         val avg = if (total == 0 || count == 0) 0.0 else total / count
         builder += ("ratingCount" -> count)
         builder += ("rating" -> avg)
+
+        // val score = 1.0 * (votePlus + voteMinus) * (votePlus / count)
+        val s = votePlus - voteMinus
+        val sign = if (s < 0) -1.0 else if (s > 0) 1.0 else 0
+        val score = sign * ((20 * 3) + (count * avg)) / (20 + count)
+        builder += ("score" -> score)
+
         message.putAll(builder.result())
 
         message.removeField("ratings")

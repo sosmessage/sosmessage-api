@@ -37,7 +37,8 @@ object StandardConverters {
           ("minus", dbObject.get("voteMinus").asInstanceOf[Int]) ~
           ("userVote", dbObject.get("userVote").asInstanceOf[Int])) ~
           ("rating", ("count", dbObject.get("ratingCount").asInstanceOf[Long]) ~
-            ("value", dbObject.get("rating").asInstanceOf[Double]))
+            ("value", dbObject.get("rating").asInstanceOf[Double])) ~
+            ("score", dbObject.get("score").asInstanceOf[Double])
     }
   }
 
