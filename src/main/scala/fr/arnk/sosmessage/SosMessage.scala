@@ -186,7 +186,6 @@ object SosMessage {
         builder += ("ratingCount" -> count)
         builder += ("rating" -> avg)
 
-        // val score = 1.0 * (votePlus + voteMinus) * (votePlus / count)
         val s = votePlus - voteMinus
         val sign = if (s < 0) -1.0 else if (s > 0) 1.0 else 0
         val score = sign * ((20 * 3) + (count * avg)) / (20 + count)
