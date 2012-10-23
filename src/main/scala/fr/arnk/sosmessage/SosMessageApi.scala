@@ -52,7 +52,7 @@ object SosMessageApi {
         }
 
         if (SosMessage.categoryExists(id)) {
-          SosMessage.randomMessage(id, uid) match {
+          SosMessage.randomMessage(id, uid, form.get("previousids")) match {
             case None => NoContent
             case Some(message) => {
               EventLogger.logEvent(computeEventData(req, "getRandomMessage", Some(id)))

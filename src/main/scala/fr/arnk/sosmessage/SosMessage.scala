@@ -68,10 +68,14 @@ object SosMessage {
     }
   }
 
-  def randomMessage(categoryId: String, uid: Option[String]): Option[Message] = {
+  def randomMessage(categoryId: String, uid: Option[String], excludedIds: Option[Seq[String]] = None): Option[Message] = {
     DB.collection(MessagesCollectionName) {
       c =>
-        val q = MongoDBObject("categoryId" -> new ObjectId(categoryId), "state" -> "approved")
+        val q = excludedIds match {
+          case Some(ids) => ("_id" $nin ids.map(id => new ObjectId(id))) ++ ("categoryId" -> new ObjectId(categoryId)) ++
+            ("state" -> "approved")
+          case None => MongoDBObject("categoryId" -> new ObjectId(categoryId), "state" -> "approved")
+        }
         val count = c.find(q, MongoDBObject("_id" -> 1)).count
         val skip = random.nextInt(if (count <= 0) 1 else count)
 
