@@ -4,7 +4,6 @@ import util.Random
 import com.mongodb.DBObject
 import java.util.Date
 import org.bson.types.ObjectId
-import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.casbah.query.Imports._
 
 object SosMessageCollections {
@@ -26,7 +25,7 @@ object SosMessage {
 
   import SosMessageCollections._
 
-  val DefaultSosMessageAppName = "smdc_fr"
+  val DefaultSosMessageAppName = "sm_fr"
 
   val random = new Random()
 
@@ -209,7 +208,7 @@ object SosMessage {
     DB.collection(MessagesCollectionName) {
       c =>
         val q = MongoDBObject("_id" -> new ObjectId(messageId))
-        c.update(q, $set(key -> rating), false, false)
+        c.update(q, $set(Seq(key -> rating)), false, false)
         Message(computeRatingInformation(c.findOne(q).get, Some(uid)))
     }
   }

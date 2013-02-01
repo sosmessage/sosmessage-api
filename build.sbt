@@ -6,24 +6,24 @@ name := "sosmessage-api"
 
 version := "2.1-SNAPSHOT"
 
+scalaVersion := "2.10.0"
+
 seq(StartScriptPlugin.startScriptForClassesSettings: _*)
 
 seq(com.github.retronym.SbtOneJar.oneJarSettings: _*)
 
-resolvers ++= Seq(
-  "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
-)
+resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
 
 libraryDependencies ++= Seq(
-  "com.typesafe.akka" % "akka-actor" % "2.0",
-  "net.databinder" %% "unfiltered-filter" % "0.6.1",
-  "net.databinder" %% "unfiltered-netty-server" % "0.6.1",
-  "net.databinder" %% "unfiltered-json" % "0.6.1",
-  "org.mongodb" %% "casbah" % "2.4.1",
-  "org.streum" %% "configrity-core" % "0.10.2",
+  "com.typesafe.akka" %% "akka-actor" % "2.1.0",
+  "net.databinder" %% "unfiltered-filter" % "0.6.7",
+  "net.databinder" %% "unfiltered-netty-server" % "0.6.7",
+  "net.databinder" %% "unfiltered-json" % "0.6.7",
+  "org.mongodb" %% "casbah" % "2.5.0",
+  "org.streum" %% "configrity-core" % "1.0.0",
   "javax.mail" % "mail" % "1.4.4",
   "ch.qos.logback" % "logback-classic" % "0.9.28",
-  "net.databinder" %% "unfiltered-spec" % "0.6.1" % "test"
+  "net.databinder" %% "unfiltered-spec" % "0.6.7" % "test"
 )
 
 scalacOptions ++= Seq("-unchecked", "-deprecation")
