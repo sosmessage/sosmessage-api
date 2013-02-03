@@ -2,7 +2,7 @@ package fr.arnk.sosmessage
 
 import org.specs._
 import unfiltered._
-import dispatch._
+import dispatch.classic._
 
 class SosMessageSpec extends Specification with unfiltered.spec.netty.Served {
 

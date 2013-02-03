@@ -19,7 +19,7 @@ object TestDB {
   }
 
   def createCategories() {
-    val smdcAppKey = "apps.smdc_fr"
+    val smAppKey = "apps.sm_fr"
     val smdtAppKey = "apps.smdt_fr"
 
     DB.collection(CategoriesCollectionName) {
@@ -32,8 +32,8 @@ object TestDB {
         builder += "modifiedAt" -> date
         builder += "lastAddedMessageAt" -> date
         c += builder.result
-        c.update(MongoDBObject("name" -> "firstCategory"), $set(smdcAppKey ->
-          MongoDBObject("published" -> true, "order" -> 3), "modifiedAt" -> new Date()), false, false)
+        c.update(MongoDBObject("name" -> "firstCategory"), $set(Seq(smAppKey ->
+          MongoDBObject("published" -> true, "order" -> 3), "modifiedAt" -> new Date())), false, false)
 
         builder = MongoDBObject.newBuilder
         builder += "name" -> "secondCategory"
@@ -42,8 +42,8 @@ object TestDB {
         builder += "modifiedAt" -> new Date(date.getTime + 10000)
         builder += "lastAddedMessageAt" -> date
         c += builder.result
-        c.update(MongoDBObject("name" -> "secondCategory"), $set(smdcAppKey ->
-          MongoDBObject("published" -> true, "order" -> 2), "modifiedAt" -> new Date()), false, false)
+        c.update(MongoDBObject("name" -> "secondCategory"), $set(Seq(smAppKey ->
+          MongoDBObject("published" -> true, "order" -> 2), "modifiedAt" -> new Date())), false, false)
 
         builder = MongoDBObject.newBuilder
         builder += "name" -> "thirdCategory"
@@ -52,8 +52,8 @@ object TestDB {
         builder += "modifiedAt" -> new Date(date.getTime + 20000)
         builder += "lastAddedMessageAt" -> date
         c += builder.result
-        c.update(MongoDBObject("name" -> "thirdCategory"), $set(smdcAppKey ->
-          MongoDBObject("published" -> false, "order" -> 1), "modifiedAt" -> new Date()), false, false)
+        c.update(MongoDBObject("name" -> "thirdCategory"), $set(Seq(smAppKey ->
+          MongoDBObject("published" -> false, "order" -> 1), "modifiedAt" -> new Date())), false, false)
 
         builder = MongoDBObject.newBuilder
         builder += "name" -> "fourthCategory"
@@ -62,10 +62,10 @@ object TestDB {
         builder += "modifiedAt" -> new Date()
         builder += "lastAddedMessageAt" -> date
         c += builder.result
-        c.update(MongoDBObject("name" -> "fourthCategory"), $set(smdcAppKey ->
-          MongoDBObject("published" -> true, "order" -> 0), "modifiedAt" -> new Date()), false, false)
-        c.update(MongoDBObject("name" -> "fourthCategory"), $set(smdtAppKey ->
-          MongoDBObject("published" -> true, "order" -> 0), "modifiedAt" -> new Date()), false, false)
+        c.update(MongoDBObject("name" -> "fourthCategory"), $set(Seq(smAppKey ->
+          MongoDBObject("published" -> true, "order" -> 0), "modifiedAt" -> new Date())), false, false)
+        c.update(MongoDBObject("name" -> "fourthCategory"), $set(Seq(smdtAppKey ->
+          MongoDBObject("published" -> true, "order" -> 0), "modifiedAt" -> new Date())), false, false)
 
         builder = MongoDBObject.newBuilder
         builder += "name" -> "fifthCategory"
@@ -74,8 +74,8 @@ object TestDB {
         builder += "modifiedAt" -> new Date()
         builder += "lastAddedMessageAt" -> date
         c += builder.result
-        c.update(MongoDBObject("name" -> "fifthCategory"), $set(smdtAppKey ->
-          MongoDBObject("published" -> true, "order" -> 1), "modifiedAt" -> new Date()), false, false)
+        c.update(MongoDBObject("name" -> "fifthCategory"), $set(Seq(smdtAppKey ->
+          MongoDBObject("published" -> true, "order" -> 1), "modifiedAt" -> new Date())), false, false)
     }
   }
 
@@ -182,7 +182,7 @@ object TestDB {
   }
 
   def createAnnouncements() {
-    val smdcAppKey = "apps.smdc_fr"
+    val smAppKey = "apps.sm_fr"
     val smdtAppKey = "apps.smdt_fr"
 
     DB.collection(AnnouncementsCollectionName) {
@@ -196,8 +196,8 @@ object TestDB {
         builder += "createdAt" -> new Date(date.getTime + 10000)
         builder += "modifiedAt" -> new Date(date.getTime + 10000)
         c += builder.result
-        c.update(MongoDBObject("title" -> "First announcement"), $set(smdcAppKey ->
-          MongoDBObject("published" -> true), "modifiedAt" -> new Date()), false, false)
+        c.update(MongoDBObject("title" -> "First announcement"), $set(Seq(smAppKey ->
+          MongoDBObject("published" -> true), "modifiedAt" -> new Date())), false, false)
 
         builder = MongoDBObject.newBuilder
         builder += "title" -> "Second announcement"
@@ -207,8 +207,8 @@ object TestDB {
         builder += "createdAt" -> new Date(date.getTime + 15000)
         builder += "modifiedAt" -> new Date(date.getTime + 15000)
         c += builder.result
-        c.update(MongoDBObject("title" -> "Second announcement"), $set(smdcAppKey ->
-          MongoDBObject("published" -> true), "modifiedAt" -> new Date()), false, false)
+        c.update(MongoDBObject("title" -> "Second announcement"), $set(Seq(smAppKey ->
+          MongoDBObject("published" -> true), "modifiedAt" -> new Date())), false, false)
 
         builder = MongoDBObject.newBuilder
         builder += "title" -> "Third announcement"
@@ -218,8 +218,8 @@ object TestDB {
         builder += "createdAt" -> new Date(date.getTime + 20000)
         builder += "modifiedAt" -> new Date(date.getTime + 20000)
         c += builder.result
-        c.update(MongoDBObject("title" -> "Third announcement"), $set(smdtAppKey ->
-          MongoDBObject("published" -> false), "modifiedAt" -> new Date()), false, false)
+        c.update(MongoDBObject("title" -> "Third announcement"), $set(Seq(smdtAppKey ->
+          MongoDBObject("published" -> false), "modifiedAt" -> new Date())), false, false)
 
         builder = MongoDBObject.newBuilder
         builder += "title" -> "Fourth announcement"
@@ -229,8 +229,8 @@ object TestDB {
         builder += "createdAt" -> new Date(date.getTime + 25000)
         builder += "modifiedAt" -> new Date(date.getTime + 25000)
         c += builder.result
-        c.update(MongoDBObject("title" -> "Fourth announcement"), $set(smdtAppKey ->
-          MongoDBObject("published" -> true), "modifiedAt" -> new Date()), false, false)
+        c.update(MongoDBObject("title" -> "Fourth announcement"), $set(Seq(smdtAppKey ->
+          MongoDBObject("published" -> true), "modifiedAt" -> new Date())), false, false)
 
         builder = MongoDBObject.newBuilder
         builder += "title" -> "Fifth announcement"
@@ -240,8 +240,8 @@ object TestDB {
         builder += "createdAt" -> new Date(date.getTime + 35000)
         builder += "modifiedAt" -> new Date(date.getTime + 35000)
         c += builder.result
-        c.update(MongoDBObject("title" -> "Fifth announcement"), $set(smdcAppKey ->
-          MongoDBObject("published" -> false), "modifiedAt" -> new Date()), false, false)
+        c.update(MongoDBObject("title" -> "Fifth announcement"), $set(Seq(smAppKey ->
+          MongoDBObject("published" -> false), "modifiedAt" -> new Date())), false, false)
     }
   }
 
