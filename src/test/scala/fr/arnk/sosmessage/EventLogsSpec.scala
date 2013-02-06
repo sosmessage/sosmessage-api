@@ -10,6 +10,32 @@ object EventLogsSpec extends SosMessageSpec {
       TestDB.initialize
     }
 
+    "not store event log when no uid" in {
+      http(host / "v2" / "categories"
+        <<? Map("appname" -> "smdc_fr") as_str)
+
+      waitForEventLogs()
+
+      val eventLogs = DB.collection(EventLogger.EventlogsCollectionName) {
+        c =>
+          c.find().toSeq
+      }
+      eventLogs.size must_== 0
+    }
+
+    "not store event log when empty uid" in {
+      http(host / "v2" / "categories"
+        <<? Map("appname" -> "smdc_fr", "uid" -> "") as_str)
+
+      waitForEventLogs()
+
+      val eventLogs = DB.collection(EventLogger.EventlogsCollectionName) {
+        c =>
+          c.find().toSeq
+      }
+      eventLogs.size must_== 0
+    }
+
     "store event logs when getting categories" in {
       http(host / "v2" / "categories"
         <<? Map("appname" -> "smdc_fr", "uid" -> "ios1") as_str)

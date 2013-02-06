@@ -12,7 +12,11 @@ object EventLogger {
   private val eventLogger = system.actorOf(Props(new EventLogger), name = "eventLogger")
 
   def logEvent(data: Map[String, Any]) {
-    eventLogger ! Event(data)
+    data.get("uid") match {
+      case Some(s: String) => if (!s.isEmpty) { eventLogger ! Event(data) }
+      case None =>
+      case _ =>
+    }
   }
 
 }
