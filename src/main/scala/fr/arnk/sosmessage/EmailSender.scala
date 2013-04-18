@@ -50,7 +50,6 @@ class EmailSender extends Actor {
 
   def sendEmail(message: DBObject) {
     val auth = SosMessageConfig[String]("SOS_MESSAGE_MAIL_AUTH").getOrElse("false")
-    val tls = SosMessageConfig[String]("SOS_MESSAGE_MAIL_TLS").getOrElse("true")
     val host = SosMessageConfig[String]("SOS_MESSAGE_MAIL_HOST").get
     val port = SosMessageConfig[Int]("SOS_MESSAGE_MAIL_PORT").get
     val user = SosMessageConfig[String]("SOS_MESSAGE_MAIL_USER").get
@@ -67,14 +66,15 @@ class EmailSender extends Actor {
     props.put("mail.smtp.starttls.enable", tls)
     props.put("mail.smtp.host", host)
     props.put("mail.smtp.port", port.toString)
-    props.put("mail.smtp.socketFactory.port", port.toString);
-    props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-    val authenticator = new Authenticator() {
-      override def getPasswordAuthentication: PasswordAuthentication = {
-        new PasswordAuthentication(user, password)
-      }
-    }
-    val session = Session.getDefaultInstance(props, authenticator)
+    // props.put("mail.smtp.socketFactory.port", port.toString);
+    // props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+    // val authenticator = new Authenticator() {
+    //   override def getPasswordAuthentication: PasswordAuthentication = {
+    //     new PasswordAuthentication(user, password)
+    //   }
+    // }
+    // val session = Session.getDefaultInstance(props, authenticator)
+    val session = Session.getDefaultInstance(props)
     val mimeMessage = new MimeMessage(session)
 
     mimeMessage.setFrom(new InternetAddress(SosMessageConfig[String]("SOS_MESSAGE_MAIL_FROM").get))
