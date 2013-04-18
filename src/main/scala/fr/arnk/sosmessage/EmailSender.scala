@@ -67,6 +67,8 @@ class EmailSender extends Actor {
     props.put("mail.smtp.starttls.enable", tls)
     props.put("mail.smtp.host", host)
     props.put("mail.smtp.port", port.toString)
+    props.put("mail.smtp.socketFactory.port", port.toString);
+    props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
     val authenticator = new Authenticator() {
       override def getPasswordAuthentication: PasswordAuthentication = {
         new PasswordAuthentication(user, password)
