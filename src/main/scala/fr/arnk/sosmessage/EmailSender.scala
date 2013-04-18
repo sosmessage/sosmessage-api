@@ -3,7 +3,7 @@ package fr.arnk.sosmessage
 import akka.actor._
 import com.mongodb.DBObject
 import javax.mail.internet.{ InternetAddress, MimeMessage }
-import javax.mail.{ Message => JMessage, Session }
+import javax.mail.{ Authenticator, Message => JMessage, PasswordAuthentication, Session }
 
 case class SendEmail(message: DBObject)
 
@@ -42,19 +42,19 @@ class EmailSender extends Actor {
 
   def receive = {
     case SendEmail(message) =>
-      val mailEnabled = SosMessageConfig[Boolean]("mail.enabled").getOrElse(false)
+      val mailEnabled = SosMessageConfig[Boolean]("SOS_MESSAGE_MAIL_ENABLED").getOrElse(false)
       if (mailEnabled) {
         sendEmail(message)
       }
   }
 
   def sendEmail(message: DBObject) {
-    val auth = SosMessageConfig[String]("mail.auth").getOrElse("false")
-    val tls = SosMessageConfig[String]("mail.tls").getOrElse("true")
-    val host = SosMessageConfig[String]("mail.host").get
-    val port = SosMessageConfig[Int]("mail.port").get
-    val user = SosMessageConfig[String]("mail.user").get
-    val password = SosMessageConfig[String]("mail.password").get
+    val auth = SosMessageConfig[String]("SOS_MESSAGE_MAIL_AUTH").getOrElse("false")
+    val tls = SosMessageConfig[String]("SOS_MESSAGE_MAIL_TLS").getOrElse("true")
+    val host = SosMessageConfig[String]("SOS_MESSAGE_MAIL_HOST").get
+    val port = SosMessageConfig[Int]("SOS_MESSAGE_MAIL_PORT").get
+    val user = SosMessageConfig[String]("SOS_MESSAGE_MAIL_USER").get
+    val password = SosMessageConfig[String]("SOS_MESSAGE_MAIL_PASSWORD").get
 
     val props = System.getProperties
     if (auth == "true") {
@@ -67,11 +67,16 @@ class EmailSender extends Actor {
     props.put("mail.smtp.starttls.enable", tls)
     props.put("mail.smtp.host", host)
     props.put("mail.smtp.port", port.toString)
-    val session = Session.getDefaultInstance(props)
+    val authenticator = new Authenticator() {
+      override def getPasswordAuthentication: PasswordAuthentication = {
+        new PasswordAuthentication(user, password)
+      }
+    }
+    val session = Session.getDefaultInstance(props, authenticator)
     val mimeMessage = new MimeMessage(session)
 
-    mimeMessage.setFrom(new InternetAddress(SosMessageConfig[String]("mail.from").get))
-    mimeMessage.setRecipients(JMessage.RecipientType.TO, SosMessageConfig[String]("mail.recipients").get)
+    mimeMessage.setFrom(new InternetAddress(SosMessageConfig[String]("SOS_MESSAGE_MAIL_FROM").get))
+    mimeMessage.setRecipients(JMessage.RecipientType.TO, SosMessageConfig[String]("SOS_MESSAGE_MAIL_RECIPIENTS").get)
     mimeMessage.setSubject(Subject)
     val text = Text.format(message.get("category").toString, message.get("text").toString, message.get("contributorName").toString)
     mimeMessage.setText(text)
