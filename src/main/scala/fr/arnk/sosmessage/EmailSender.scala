@@ -49,6 +49,7 @@ class EmailSender extends Actor {
   }
 
   def sendEmail(message: DBObject) {
+    val tls = SosMessageConfig[String]("SOS_MESSAGE_MAIL_TLS").getOrElse("false")
     val auth = SosMessageConfig[String]("SOS_MESSAGE_MAIL_AUTH").getOrElse("false")
     val host = SosMessageConfig[String]("SOS_MESSAGE_MAIL_HOST").get
     val port = SosMessageConfig[Int]("SOS_MESSAGE_MAIL_PORT").get
