@@ -28,6 +28,7 @@ object TestDB {
         var builder = MongoDBObject.newBuilder
         builder += "name" -> "firstCategory"
         builder += "color" -> "#000"
+        builder += "free" -> true
         builder += "createdAt" -> date
         builder += "modifiedAt" -> date
         builder += "lastAddedMessageAt" -> date
@@ -38,6 +39,7 @@ object TestDB {
         builder = MongoDBObject.newBuilder
         builder += "name" -> "secondCategory"
         builder += "color" -> "#fff"
+        builder += "free" -> true
         builder += "createdAt" -> new Date(date.getTime + 10000)
         builder += "modifiedAt" -> new Date(date.getTime + 10000)
         builder += "lastAddedMessageAt" -> date
@@ -48,6 +50,7 @@ object TestDB {
         builder = MongoDBObject.newBuilder
         builder += "name" -> "thirdCategory"
         builder += "color" -> "#0f0"
+        builder += "free" -> false
         builder += "createdAt" -> new Date(date.getTime + 20000)
         builder += "modifiedAt" -> new Date(date.getTime + 20000)
         builder += "lastAddedMessageAt" -> date
@@ -58,6 +61,7 @@ object TestDB {
         builder = MongoDBObject.newBuilder
         builder += "name" -> "fourthCategory"
         builder += "color" -> "#00f"
+        builder += "free" -> false
         builder += "createdAt" -> new Date()
         builder += "modifiedAt" -> new Date()
         builder += "lastAddedMessageAt" -> date
@@ -70,6 +74,7 @@ object TestDB {
         builder = MongoDBObject.newBuilder
         builder += "name" -> "fifthCategory"
         builder += "color" -> "#0ff"
+        builder += "free" -> false
         builder += "createdAt" -> new Date()
         builder += "modifiedAt" -> new Date()
         builder += "lastAddedMessageAt" -> date

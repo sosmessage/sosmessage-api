@@ -17,6 +17,7 @@ object StandardConverters {
         ("type", "category") ~
         ("name", dbObject.get("name").toString) ~
         ("color", dbObject.get("color").toString) ~
+        ("free", dbObject.get("free").asInstanceOf[Boolean]) ~
         ("lastAddedMessageAt", dbObject.get("lastAddedMessageAt").asInstanceOf[Date].getTime)
     }
   }

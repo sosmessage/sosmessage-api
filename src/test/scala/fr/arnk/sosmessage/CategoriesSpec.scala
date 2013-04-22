@@ -31,14 +31,17 @@ object CategoriesSpec extends SosMessageSpec {
       val firstItem = items(0)
       firstItem \ "name" must_== JString("firstCategory")
       firstItem \ "color" must_== JString("#000")
+      firstItem \ "free" must_== JBool(true)
 
       val secondItem = items(1)
       secondItem \ "name" must_== JString("secondCategory")
       secondItem \ "color" must_== JString("#fff")
+      secondItem \ "free" must_== JBool(true)
 
       val thirdItem = items(2)
       thirdItem \ "name" must_== JString("fourthCategory")
       thirdItem \ "color" must_== JString("#00f")
+      thirdItem \ "free" must_== JBool(false)
     }
 
     "retrieve ordered published categories for the smdt appname" in {
