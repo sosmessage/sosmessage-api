@@ -4,7 +4,7 @@ organization := "fr.arnk"
 
 name := "sosmessage-api"
 
-version := "2.3-SNAPSHOT"
+version := "2.3"
 
 scalaVersion := "2.10.0"
 
