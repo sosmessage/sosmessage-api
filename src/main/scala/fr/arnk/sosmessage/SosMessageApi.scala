@@ -317,15 +317,15 @@ object SosMessageApi {
     val userAgent = UserAgent.apply(req)
     val (appVersion, os) = userAgent match {
       case Some(ua) => {
-        val AppVersion = """sosmessage/(.+?) .*""".r
+        val AppVersion = """(sosmessage|sosmessage-lite)/(.+?) .*""".r
         try {
-          val AppVersion(version) = ua
+          val AppVersion(app, version) = ua
           (version, "ios")
         } catch {
-          case e: MatchError => (0, "unknown")
+          case e: MatchError => ("0", "unknown")
         }
       }
-      case None => (0, "unknown")
+      case None => ("0", "unknown")
     }
 
     val Params(form) = req
