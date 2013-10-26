@@ -321,9 +321,9 @@ object SosMessageApi {
         try {
           val AppVersion(app, version, android, rest) = ua
           if (android == null) {
-            (version, "android")
-          } else {
             (version, "ios")
+          } else {
+            (version, "android")
           }
         } catch {
           case e: MatchError => ("0", "unknown")
