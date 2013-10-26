@@ -317,7 +317,7 @@ object SosMessageApi {
     val userAgent = UserAgent.apply(req)
     val (appVersion, os) = userAgent match {
       case Some(ua) => {
-        val AppVersion = """(sosmessage|sosmessage-lite)/(.+?)(/android)?( .*)?""".r
+        val AppVersion = """(sosmessage|sosmessage-lite|sosmessages)/(.+?)(/android)?( .*)?""".r
         try {
           val AppVersion(app, version, android, rest) = ua
           if (android == null) {
